@@ -1,6 +1,7 @@
-import { IsString, IsOptional, IsInt, IsEnum, MaxLength } from 'class-validator';
+import { IsString, IsOptional, IsInt, IsEnum, MaxLength, IsNotEmpty } from 'class-validator';
+import { TeachingModes } from 'src/globals/enums/teaching-modes.enum';
 
-export class CreateTeacherDto {
+export class CreateUpdateTeacherDto {
   @IsOptional()
   @IsString()
   @MaxLength(100)
@@ -24,11 +25,7 @@ export class CreateTeacherDto {
   @MaxLength(255)
   cvUrl?: string;
 
-  @IsOptional()
-  @IsEnum(['presencial', 'virtual', 'semipresencial'])
-  teachingModes?: string;
-
-  @IsOptional()
-  @IsEnum(['activo', 'inactivo'])
-  status?: string;
+  @IsNotEmpty()
+  @IsEnum(TeachingModes)
+  teachingModes: TeachingModes;
 }

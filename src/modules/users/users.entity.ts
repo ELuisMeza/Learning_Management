@@ -12,6 +12,7 @@ import { Role } from '../roles/roles.entity';
 import { Teacher } from '../teachers/teachers.entity';
 import { GlobalStatus } from 'src/globals/enums/global-status.enum';
 import { GenderType } from 'src/globals/enums/gender-type.enum';
+import { Exclude } from 'class-transformer';
 
 @Entity('users')
 export class User {
@@ -37,6 +38,7 @@ export class User {
   email: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
+  @Exclude()
   password: string;
 
   @Column({ type: 'enum', enum: GlobalStatus, default: GlobalStatus.ACTIVE })
@@ -72,9 +74,9 @@ export class User {
   @JoinColumn({ name: 'created_by' })
   creator: User;
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamp with time zone' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamp with time zone', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
-  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp with time zone' })
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp with time zone', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
 }

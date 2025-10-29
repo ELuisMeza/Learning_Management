@@ -9,6 +9,7 @@ import {
   HttpCode,
   HttpStatus,
   Req,
+  Put,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -55,32 +56,11 @@ export class UsersController {
     return this.usersService.create(createUserDto, req.user.userId);
   }
 
-  @Get()
-  @ApiOperation({ summary: 'Listar usuarios' })
-  @ApiOkResponse({ description: 'Listado de usuarios' })
-  findAll() {
-    return this.usersService.findAll();
-  }
-
-  @Get(':id')
-  @ApiOperation({ summary: 'Obtener usuario por id' })
-  @ApiOkResponse({ description: 'Usuario encontrado' })
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(id);
-  }
-
-  @Patch(':id')
+  @Put(':id')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Actualizar usuario' })
   @ApiOkResponse({ description: 'Usuario actualizado' })
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto);
-  }
-
-  @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Eliminar usuario' })
-  @ApiNoContentResponse({ description: 'Usuario eliminado' })
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(id);
-  }
+  } 
 }
