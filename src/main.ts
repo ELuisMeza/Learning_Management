@@ -2,12 +2,33 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import * as dotenv from 'dotenv';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 // Cargar variables de entorno
 dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('Learning Management System API')
+    .setDescription('Documentación de la API')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('api', app, document, {
+    swaggerOptions: {
+      // Colocar el tag 'auth' primero y el resto en orden alfabético
+      tagsSorter: (a: string, b: string) => {
+        if (a === 'auth') return -1;
+        if (b === 'auth') return 1;
+        return a.localeCompare(b);
+      },
+      operationsSorter: 'alpha',
+    },
+  });
   
   app.enableCors({
     origin: '*', 
@@ -24,6 +45,11 @@ async function bootstrap() {
   // Interceptor global para excluir campos marcados con @Exclude()
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
-  await app.listen(process.env.PORT ?? 3000);
+  const port = Number(process.env.PORT ?? 3000);
+  await app.listen(port);
+  const appUrl = await app.getUrl();
+  // Mostrar URLs útiles en consola
+  console.log(`Servidor escuchando en: ${appUrl}`);
+  console.log(`Documentación Swagger: ${appUrl}/api`);
 }
 bootstrap();

@@ -1,0 +1,47 @@
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { AuthService } from './auth.service';
+import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { LoginDto } from './dto/login.dto';
+import { SignTextDto } from './dto/sign-text.dto';
+
+
+@ApiTags('auth')
+@Controller('auth')
+export class AuthController {
+  constructor(private readonly authService: AuthService) {}
+
+  @Post('login')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Autenticación de usuario' })
+  @ApiBody({
+    type: LoginDto,
+    description: 'Payload para login',
+    examples: {
+      ejemplo: {
+        summary: 'Ejemplo básico',
+        value: {
+          email: 'juan.perez@example.com',
+          password: 'SuperSegura123',
+        },
+      },
+    },
+  })
+  @ApiOkResponse({ description: 'Retorna JWT como Bearer token' })
+  async login(@Body() loginDto: LoginDto) {
+    return this.authService.login(loginDto.email, loginDto.password);
+  }
+
+  @Post('sign-text')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Hashea un texto plano (útil para generar contraseñas hasheadas)' })
+  @ApiOkResponse({ description: 'Retorna el texto hasheado usando bcrypt' })
+  async signText(@Body() signTextDto: SignTextDto) {
+    const hashedPassword = await this.authService.signText(signTextDto.text);
+    return { 
+      originalText: signTextDto.text,
+      hashedPassword 
+    };
+  }
+}
+
+
