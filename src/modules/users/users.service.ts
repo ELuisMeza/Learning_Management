@@ -10,6 +10,7 @@ import { TeachersService } from '../teachers/teachers.service';
 import { AuthService } from '../auth/auth.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUpdateTeacherDto } from '../teachers/dto/create-teacher.dto';
+import { TeachingModes } from 'src/globals/enums/teaching-modes.enum';
 
 @Injectable()
 export class UsersService {
@@ -24,7 +25,7 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto, userCreatorId: string): Promise<User> {
 
-    if(await this.existsNumberDocument(createUserDto.documentNumber)){
+    if(await this.existsNumberDocument(createUserDto.documentNumber!)){
       throw new ConflictException('El número de documento ya está registrado');
     }
 
@@ -108,7 +109,7 @@ export class UsersService {
         experienceYears: updateUserDto.experienceYears || 0,
         bio: updateUserDto.bio || '',
         cvUrl: updateUserDto.cvUrl || '',
-        teachingModes: updateUserDto.teachingModes || user.teacher.teachingModes,
+        teachingModes: updateUserDto.teachingModes as TeachingModes || user.teacher.teachingModes,
       };
 
       await this.teachersService.update(user.teacher.id, payloadTeacher);

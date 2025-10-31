@@ -8,11 +8,15 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
+  Put,
 } from '@nestjs/common';
 import { AcademicModulesService } from './academic-modules.service';
-import { ApiBearerAuth, ApiCreatedResponse, ApiNoContentResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiNoContentResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { CreateAcademicModuleDto } from './dto/create-module.dto';
+import { AcademicModule } from './academic-modules.entity';
+import { UpdateAcademicModuleDto } from './dto/update-module.dto';
 
 @ApiTags('academic-modules')
 @ApiBearerAuth()
@@ -20,4 +24,28 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 @Controller('academic-modules')
 export class AcademicModulesController {
   constructor(private readonly academicModulesService: AcademicModulesService) {}
+  
+  @Get('by-cycle/:cycleId')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Obtener módulos académicos por ID de ciclo' })
+  @ApiOkResponse({ description: 'Módulos académicos obtenidos exitosamente' })
+  getByCycleId(@Param('cycleId') cycleId: string) {
+    return this.academicModulesService.getByCycleId(cycleId);
+  }
+
+  @Post()
+  @ApiOperation({ summary: 'Crear un módulo académico' })
+  @ApiCreatedResponse({ description: 'Módulo académico creado exitosamente' })
+  @ApiBody({ type: CreateAcademicModuleDto })
+  async create(@Body() createAcademicModuleDto: CreateAcademicModuleDto): Promise<AcademicModule> {
+    return await this.academicModulesService.create(createAcademicModuleDto);
+  }
+
+  @Put(':id')
+  @ApiOperation({ summary: 'Actualizar un módulo académico' })
+  @ApiOkResponse({ description: 'Módulo académico actualizado exitosamente' })
+  @ApiBody({ type: UpdateAcademicModuleDto })
+  async update(@Param('id') id: string, @Body() updateAcademicModuleDto: UpdateAcademicModuleDto): Promise<AcademicModule> {
+    return await this.academicModulesService.update(id, updateAcademicModuleDto);
+  }
 }

@@ -29,28 +29,6 @@ export class UsersController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Crear usuario' })
-  @ApiBody({
-    type: CreateUserDto,
-    description: 'Payload para crear usuario',
-    examples: {
-      ejemplo: {
-        summary: 'Ejemplo básico',
-        value: {
-          name: 'Juan',
-          lastNameFather: 'Pérez',
-          lastNameMother: 'García',
-          documentType: 'DNI',
-          documentNumber: '12345678',
-          email: 'juan.perez@example.com',
-          password: 'SuperSegura123',
-          gender: 'male',
-          birthdate: '1990-05-20',
-          phone: '+51 987654321',
-          roleId: 'f5f8b4f0-3f07-4c0f-8a0a-4b4a5b7a9a1c',
-        },
-      },
-    },
-  })
   @ApiCreatedResponse({ description: 'Usuario creado' })
   create(@Body() createUserDto: CreateUserDto, @Req() req: RequestWithUser) {
     return this.usersService.create(createUserDto, req.user.userId);
