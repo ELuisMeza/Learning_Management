@@ -9,6 +9,8 @@ import {
 } from 'typeorm';
 import { Class } from '../classes/classes.entity';
 import { User } from '../users/users.entity';
+import { EnrollmentStatus } from 'src/globals/enums/enrollment-status.enum';
+import { IsEnum } from 'class-validator';
 
 @Entity('class_students')
 export class ClassStudent {
@@ -32,8 +34,9 @@ export class ClassStudent {
   @Column({ name: 'final_note', type: 'decimal', precision: 5, scale: 2, nullable: true })
   finalNote: number;
 
-  @Column({ type: 'varchar', default: 'in_course' })
-  status: string;
+  @Column({ type: 'enum', enum: EnrollmentStatus, default: EnrollmentStatus.IN_COURSE })
+  @IsEnum(EnrollmentStatus)
+  status: EnrollmentStatus;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;

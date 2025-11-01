@@ -8,6 +8,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Career } from '../careers/careers.entity';
+import { GlobalStatus } from 'src/globals/enums/global-status.enum';
+import { IsEnum } from 'class-validator';
 
 @Entity('academic_cycles')
 export class AcademicCycle {
@@ -39,8 +41,9 @@ export class AcademicCycle {
   @Column({ name: 'duration_weeks', type: 'int', default: 16 })
   durationWeeks: number;
 
-  @Column({ type: 'varchar', default: 'activo' })
-  status: string;
+  @Column({ type: 'enum', enum: GlobalStatus, default: GlobalStatus.ACTIVE })
+  @IsEnum(GlobalStatus)
+  status: GlobalStatus;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;

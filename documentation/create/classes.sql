@@ -7,8 +7,8 @@ CREATE TABLE classes (
   credits INT DEFAULT 0,
   status global_status DEFAULT 'activo',
   teacher_id UUID REFERENCES teachers(id),
-  schedule JSONB DEFAULT '{}',
-  max_students INT default 1,
+  type_teaching teaching_modes default 'in_person' not null,
+  max_students INT default 1  not null,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );

@@ -10,6 +10,8 @@ import {
 import { Class } from '../classes/classes.entity';
 import { EvaluationType } from '../evaluation-types/evaluation-types.entity';
 import { Rubric } from '../rubrics/rubrics.entity';
+import { EvaluationModes } from 'src/globals/enums/evaluation-modes.enum';
+import { IsEnum } from 'class-validator';
 
 @Entity('evaluations')
 export class Evaluation {
@@ -29,8 +31,9 @@ export class Evaluation {
   @Column({ type: 'text', nullable: true })
   description: string;
 
-  @Column({ name: 'evaluation_mode', type: 'varchar', default: 'teacher' })
-  evaluationMode: string;
+  @Column({ name: 'evaluation_mode', type: 'enum', enum: EvaluationModes, default: EvaluationModes.TEACHER })
+  @IsEnum(EvaluationModes)
+  evaluationMode: EvaluationModes;
 
   @Column({ name: 'evaluation_type_id', type: 'uuid' })
   evaluationTypeId: string;

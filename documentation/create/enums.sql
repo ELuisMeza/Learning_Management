@@ -7,3 +7,13 @@ CREATE TYPE teaching_modes AS ENUM ('in_person', 'online', 'hybrid');
 CREATE TYPE enrollment_status AS ENUM ('in_course', 'completed', 'withdrawn');
 
 CREATE TYPE evaluation_modes  AS ENUM ('teacher', 'self', 'peer');
+
+CREATE TYPE day_of_week_enum AS ENUM (
+  'monday',
+  'tuesday',
+  'wednesday',
+  'thursday',
+  'friday',
+  'saturday',
+  'sunday'
+);

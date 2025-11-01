@@ -11,6 +11,7 @@ export class InitSchema1700000000000 implements MigrationInterface {
     await queryRunner.query(`CREATE TYPE teaching_modes AS ENUM ('in_person', 'online', 'hybrid')`);
     await queryRunner.query(`CREATE TYPE enrollment_status AS ENUM ('in_course', 'completed', 'withdrawn')`);
     await queryRunner.query(`CREATE TYPE evaluation_modes AS ENUM ('teacher', 'self', 'peer')`);
+    await queryRunner.query(`CREATE TYPE day_of_week_enum AS ENUM ('monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday')`);
 
     // 1.- roles
     await queryRunner.query(`
@@ -112,23 +113,43 @@ export class InitSchema1700000000000 implements MigrationInterface {
 
     // 7.- classes
     await queryRunner.query(`
-      CREATE TABLE classes (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        module_id UUID NOT NULL REFERENCES academic_modules(id) ON DELETE CASCADE,
-        code VARCHAR(20) UNIQUE NOT NULL,
-        name VARCHAR(150) NOT NULL,
-        description TEXT,
-        credits INT DEFAULT 0,
-        status global_status DEFAULT 'active',
-        teacher_id UUID REFERENCES teachers(id),
-        schedule JSONB DEFAULT '{}'::jsonb,
-        max_students INT DEFAULT 1,
-        created_at TIMESTAMP DEFAULT NOW(),
-        updated_at TIMESTAMP DEFAULT NOW()
-      )
+        CREATE TABLE classes (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          module_id UUID NOT NULL REFERENCES academic_modules(id) ON DELETE CASCADE,
+          code VARCHAR(20) UNIQUE NOT NULL,
+          name VARCHAR(150) NOT NULL,
+          description TEXT,
+          credits INT DEFAULT 0,
+          status global_status DEFAULT 'active',
+          teacher_id UUID REFERENCES teachers(id),
+          type_teaching teaching_modes default 'in_person' not null,
+          max_students INT default 1  not null,
+          created_at TIMESTAMP DEFAULT NOW(),
+          updated_at TIMESTAMP DEFAULT NOW()
+        );
     `);
 
-    // 8.- tabla intermedia class_students
+    // 8.- class_schedules
+    await queryRunner.query(`
+      CREATE TABLE class_schedules (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        class_id UUID NOT NULL REFERENCES classes(id) ON DELETE CASCADE,
+        day_of_week day_of_week_enum NOT NULL,
+        start_time TIME NOT NULL,
+        end_time TIME NOT NULL,
+        room VARCHAR(50), 
+        status global_status DEFAULT 'active' NOT NULL,
+        type_teaching teaching_modes DEFAULT 'in_person' NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW(),
+        CONSTRAINT chk_time_valid CHECK (start_time < end_time)
+      );
+
+      CREATE INDEX idx_class_schedules_day_time
+      ON class_schedules (day_of_week, start_time, end_time);
+    `);
+
+    // 9.- tabla intermedia class_students
     await queryRunner.query(`
       CREATE TABLE class_students (
         class_id UUID NOT NULL REFERENCES classes(id) ON DELETE CASCADE,
@@ -140,7 +161,7 @@ export class InitSchema1700000000000 implements MigrationInterface {
       )
     `);
 
-    // 9.- evaluation_types
+    // 10.- evaluation_types
     await queryRunner.query(`
       CREATE TABLE evaluation_types (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -151,7 +172,7 @@ export class InitSchema1700000000000 implements MigrationInterface {
       )
     `);
 
-    // 10.- rubrics
+    // 11.- rubrics
     await queryRunner.query(`
       CREATE TABLE rubrics (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -164,7 +185,7 @@ export class InitSchema1700000000000 implements MigrationInterface {
       )
     `);
 
-    // 11.- evaluations
+    // 12.- evaluations
     await queryRunner.query(`
       CREATE TABLE evaluations (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -183,7 +204,7 @@ export class InitSchema1700000000000 implements MigrationInterface {
       )
     `);
 
-    // 12.- evaluation_results
+    // 13.- evaluation_results
     await queryRunner.query(`
       CREATE TABLE evaluation_results (
         evaluation_id UUID NOT NULL REFERENCES evaluations(id) ON DELETE CASCADE,
@@ -197,7 +218,7 @@ export class InitSchema1700000000000 implements MigrationInterface {
       )
     `);
 
-    // 13.- rubric_criteria
+    // 14.- rubric_criteria
     await queryRunner.query(`
       CREATE TABLE rubric_criteria (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -211,7 +232,7 @@ export class InitSchema1700000000000 implements MigrationInterface {
       )
     `);
 
-    // 14.- rubric_levels
+    // 15.- rubric_levels
     await queryRunner.query(`
       CREATE TABLE rubric_levels (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

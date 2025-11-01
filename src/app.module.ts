@@ -20,6 +20,7 @@ import { RubricLevelsModule } from './modules/rubric-levels/rubric-levels.module
 import { EvaluationsModule } from './modules/evaluations/evaluations.module';
 import { EvaluationResultsModule } from './modules/evaluation-results/evaluation-results.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { ClassSchedulesModule } from './modules/class_schedules/class_schedules.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { AuthModule } from './modules/auth/auth.module';
     EvaluationsModule,
     EvaluationResultsModule,
     AuthModule,
+    ClassSchedulesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -5,6 +5,8 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { GlobalStatus } from 'src/globals/enums/global-status.enum';
+import { IsEnum } from 'class-validator';
 
 @Entity('teachers')
 export class Teacher {
@@ -29,8 +31,9 @@ export class Teacher {
   @Column({ name: 'teaching_modes', type: 'varchar', default: 'semipresencial' })
   teachingModes: string;
 
-  @Column({ type: 'varchar', default: 'activo' })
-  status: string;
+  @Column({ type: 'enum', enum: GlobalStatus, default: GlobalStatus.ACTIVE })
+  @IsEnum(GlobalStatus)
+  status: GlobalStatus;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp with time zone', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
