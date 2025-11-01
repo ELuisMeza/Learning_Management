@@ -4,6 +4,8 @@ CREATE TABLE class_schedules (
   day_of_week day_of_week_enum NOT NULL,
   start_time TIME NOT NULL,
   end_time TIME NOT NULL,
+  start_date DATE NOT NULL,                       -- fecha desde cuándo aplica
+  end_date DATE NOT NULL,   
   room VARCHAR(50), 
   status global_status DEFAULT 'active' NOT NULL,
   type_teaching teaching_modes DEFAULT 'in_person' NOT NULL,

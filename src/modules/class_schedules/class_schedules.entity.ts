@@ -35,6 +35,12 @@ export class ClassSchedule {
   @Column({ name: 'end_time', type: 'time' })
   endTime: string;
 
+  @Column({ name: 'start_date', type: 'date' })
+  startDate: string;
+
+  @Column({ name: 'end_date', type: 'date' })
+  endDate: string; 
+
   @Column({ name: 'room', type: 'varchar', length: 50, nullable: true })
   room: string;
 

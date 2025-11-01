@@ -1,8 +1,9 @@
 import { DayOfWeek } from "src/globals/enums/day-of-week.enum";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEnum, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsDate, IsDateString, IsEnum, IsNotEmpty, IsOptional, IsString } from "class-validator";
 import { GlobalStatus } from "src/globals/enums/global-status.enum";
 import { TeachingModes } from "src/globals/enums/teaching-modes.enum";
+import { Type } from "class-transformer";
 
 export class UpdateScheduleDto {
   @ApiProperty({ enum: DayOfWeek, example: DayOfWeek.MONDAY, description: 'Día de la semana' })
@@ -19,6 +20,16 @@ export class UpdateScheduleDto {
   @IsString()
   @IsNotEmpty()
   endTime: string;
+
+  @ApiProperty({ example: '2025-01-01', description: 'Fecha de inicio' })
+  @IsDateString()
+  @IsNotEmpty()
+  startDate: string;
+
+  @ApiProperty({ example: '2025-01-01', description: 'Fecha de fin' })
+  @IsDateString()
+  @IsNotEmpty()
+  endDate: string;
 
   @ApiProperty({ example: 'Aula 101', description: 'Aula' })
   @IsString()
