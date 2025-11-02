@@ -26,6 +26,9 @@ import { JwtService } from '@nestjs/jwt';
 @ApiTags('class-students')
 @Controller('class-students')
 export class ClassStudentsController {
+
+  private readonly frontendUrl: string = process.env.FRONTEND_URL || 'http://localhost:3000';
+
   constructor(
     private readonly classStudentsService: ClassStudentsService,
     private readonly jwtService: JwtService,
@@ -63,12 +66,11 @@ export class ClassStudentsController {
     @Res() res: Response,
   ) {
     if (!token) {
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
       return res.status(HttpStatus.UNAUTHORIZED).send(`
         <html>
           <head>
             <title>Error - Sin autenticación</title>
-            <meta http-equiv="refresh" content="5;url=${frontendUrl}/login">
+            <meta http-equiv="refresh" content="5;url=${this.frontendUrl}/login">
             <style>
               body { 
                 font-family: Arial, sans-serif; 
@@ -99,7 +101,7 @@ export class ClassStudentsController {
             <div class="error">
               <h1>❌ Error de Autenticación</h1>
               <p>Por favor, inicia sesión en la aplicación y vuelve a escanear el código QR.</p>
-              <a href="${frontendUrl}/login" class="login-link">Ir al Login</a>
+              <a href="${this.frontendUrl}/login" class="login-link">Ir al Login</a>
               <p><small>Serás redirigido en 5 segundos...</small></p>
             </div>
           </body>
@@ -120,7 +122,7 @@ export class ClassStudentsController {
         <html>
           <head>
             <title>¡Matriculación Exitosa!</title>
-            <meta http-equiv="refresh" content="3;url=${process.env.FRONTEND_URL || 'http://localhost:3000'}">
+            <meta http-equiv="refresh" content="3;url=${this.frontendUrl}">
             <style>
               body { 
                 font-family: Arial, sans-serif; 
@@ -166,7 +168,7 @@ export class ClassStudentsController {
           <html>
             <head>
               <title>Error - Token Inválido</title>
-              <meta http-equiv="refresh" content="5;url=${process.env.FRONTEND_URL || 'http://localhost:3000'}/login">
+              <meta http-equiv="refresh" content="5;url=${this.frontendUrl}/login">
               <style>
                 body { font-family: Arial; text-align: center; padding: 50px; }
                 .error { color: #d32f2f; background: white; padding: 30px; border-radius: 10px; max-width: 500px; margin: 0 auto; }
@@ -186,7 +188,7 @@ export class ClassStudentsController {
           <html>
             <head>
               <title>Ya Matriculado</title>
-              <meta http-equiv="refresh" content="3;url=${process.env.FRONTEND_URL || 'http://localhost:3000'}">
+              <meta http-equiv="refresh" content="3;url=${this.frontendUrl}">
               <style>
                 body { font-family: Arial; text-align: center; padding: 50px; }
                 .warning { color: #ed6c02; background: white; padding: 30px; border-radius: 10px; max-width: 500px; margin: 0 auto; }

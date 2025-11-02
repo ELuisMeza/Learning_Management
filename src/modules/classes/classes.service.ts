@@ -10,6 +10,9 @@ import * as QRCode from 'qrcode';
 
 @Injectable()
 export class ClassesService {
+
+  private readonly backendUrl: string = process.env.BACKEND_URL || `http://localhost:${process.env.PORT || 3001}`;
+
   constructor(
     @InjectRepository(Class)
     private readonly classRepository: Repository<Class>,
@@ -52,9 +55,8 @@ export class ClassesService {
     const classRegister = await this.getByIdAndActive(classId);
     try {
       // Obtener la URL del backend desde las variables de entorno
-      const backendUrl = process.env.BACKEND_URL || `http://localhost:${process.env.PORT || 3001}`;
       // Crear URL de matrícula con el ID de la clase
-      const enrollUrl = `${backendUrl}/class-students/enroll/${classId}`;
+      const enrollUrl = `${this.backendUrl}/class-students/enroll/${classId}`;
       
       // Generar el código QR como base64 con la URL
       const qrDataURL = await QRCode.toDataURL(enrollUrl);
