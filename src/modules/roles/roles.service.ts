@@ -25,4 +25,13 @@ export class RolesService {
 
     return role;
   }
+
+  async getByName(name: string): Promise<Role> {
+    const role = await this.roleRepository.findOne({ where: { name, status: GlobalStatus.ACTIVE } });
+    if (!role) {
+      throw new NotFoundException(`Role with name '${name}' not found`);
+    }
+
+    return role;
+  }
 }

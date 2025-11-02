@@ -5,6 +5,7 @@ import { DateTime } from 'luxon';
 import { User } from './users.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { GlobalStatus } from 'src/globals/enums/global-status.enum';
+import { GenderType } from 'src/globals/enums/gender-type.enum';
 import { RolesService } from '../roles/roles.service';
 import { TeachersService } from '../teachers/teachers.service';
 import { AuthService } from '../auth/auth.service';
@@ -126,6 +127,34 @@ export class UsersService {
       throw new BadRequestException('El usuario no es un estudiante');
     }
     return user;
+  }
+
+  async findOrCreateGoogleUser(googleProfile: any): Promise<User> {
+    const { email, firstName, lastName } = googleProfile;
+    
+    // Buscar si el usuario ya existe por email
+    let user = await this.findByEmail(email);
+    
+    if (user) {
+      return user;
+    }
+
+    // Si no existe, crear un nuevo usuario con rol de Estudiante por defecto
+    const studentRole = await this.rolesService.getByName('Estudiante');
+    
+    const payloadUser: Partial<User> = {
+      email,
+      name: firstName,
+      lastNameFather: lastName || '',
+      lastNameMother: '',
+      password: undefined, // No se necesita contraseña para usuarios de Google
+      status: GlobalStatus.ACTIVE,
+      gender: GenderType.OTHER,
+      roleId: studentRole.id,
+      createdBy: undefined,
+    };
+
+    return await this.userRepository.save(payloadUser);
   }
 
 }

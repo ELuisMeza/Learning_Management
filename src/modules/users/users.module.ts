@@ -6,9 +6,10 @@ import { RolesModule } from '../roles/roles.module';
 import { UsersController } from './users.controller';
 import { TeachersModule } from '../teachers/teachers.module';
 import { AuthModule } from '../auth/auth.module';
+import { EmailsModule } from '../emails/emails.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), RolesModule, TeachersModule, forwardRef(() => AuthModule)],
+  imports: [TypeOrmModule.forFeature([User]), RolesModule, TeachersModule, forwardRef(() => AuthModule), EmailsModule],
   providers: [UsersService],
   controllers: [UsersController],
   exports: [UsersService],

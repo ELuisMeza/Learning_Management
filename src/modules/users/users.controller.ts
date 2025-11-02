@@ -18,20 +18,26 @@ import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import type { RequestWithUser } from 'src/globals/types/request-with-user.type';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { EmailsService } from '../emails/emails.service';
 
 @ApiTags('users')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly emailsService: EmailsService
+  ) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Crear usuario' })
   @ApiCreatedResponse({ description: 'Usuario creado' })
-  create(@Body() createUserDto: CreateUserDto, @Req() req: RequestWithUser) {
-    return this.usersService.create(createUserDto, req.user.userId);
+  async create(@Body() createUserDto: CreateUserDto, @Req() req: RequestWithUser) {
+    const user = await this.usersService.create(createUserDto, req.user.userId);
+    await this.emailsService.sendWelcomeEmail(user.email, user.name);
+    return user;
   }
 
   @Put(':id')

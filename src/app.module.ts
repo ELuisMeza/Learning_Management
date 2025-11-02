@@ -21,6 +21,7 @@ import { EvaluationsModule } from './modules/evaluations/evaluations.module';
 import { EvaluationResultsModule } from './modules/evaluation-results/evaluation-results.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ClassSchedulesModule } from './modules/class_schedules/class_schedules.module';
+import { EmailsModule } from './modules/emails/emails.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { ClassSchedulesModule } from './modules/class_schedules/class_schedules.
     EvaluationResultsModule,
     AuthModule,
     ClassSchedulesModule,
+    EmailsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
