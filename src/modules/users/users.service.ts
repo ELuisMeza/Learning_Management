@@ -76,19 +76,19 @@ export class UsersService {
 
   async findByEmail(email: string): Promise<User | null> {
     return await this.userRepository.findOne({
-      where: { email },
+      where: { email, status: GlobalStatus.ACTIVE },
       relations: ['role'],
     });
   }
 
   async existsNumberDocument(documentNumber: string): Promise<boolean> {
     const user = await this.userRepository.findOne({
-      where: { documentNumber },
+      where: { documentNumber, status: GlobalStatus.ACTIVE },
     });
     return user ? true : false;
   }
 
-  async getById(id: string): Promise<User> {
+  async getByIdAndActive(id: string): Promise<User> {
     const user = await this.userRepository.findOne({ where: { id }, relations: ['role', 'teacher'] });
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
@@ -98,7 +98,7 @@ export class UsersService {
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
 
-    const user = await this.getById(id);
+    const user = await this.getByIdAndActive(id);
 
     if(user.role.name === 'Docente'){
 
@@ -117,6 +117,15 @@ export class UsersService {
 
     Object.assign(user, updateUserDto);
     return await this.userRepository.save(user);
+  }
+
+  async isStudent(id: string): Promise<User> {
+    const user = await this.getByIdAndActive(id);
+    const isStudent = user.role.name === 'Estudiante';
+    if (!isStudent) {
+      throw new BadRequestException('El usuario no es un estudiante');
+    }
+    return user;
   }
 
 }

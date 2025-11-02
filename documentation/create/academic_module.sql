@@ -5,7 +5,7 @@ CREATE TABLE academic_modules (
     name VARCHAR(100) NOT NULL,
     description TEXT,
     order_number INT DEFAULT 1,
-    status global_status DEFAULT 'activo',
+    status global_status DEFAULT 'active',
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );

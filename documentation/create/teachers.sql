@@ -6,7 +6,7 @@ CREATE TABLE teachers (
   bio TEXT,
   cv_url VARCHAR(255),
   teaching_modes teaching_modes default 'semipresencial',
-  status global_status DEFAULT 'activo',
+  status global_status DEFAULT 'active',
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

@@ -159,6 +159,8 @@ export class InitSchema1700000000000 implements MigrationInterface {
         enrollment_date TIMESTAMP DEFAULT NOW(),
         final_note DECIMAL(5,2) DEFAULT NULL,
         status enrollment_status DEFAULT 'in_course',
+        updated_at TIMESTAMP DEFAULT NOW(),
+        user_modified_id UUID REFERENCES users(id) ON DELETE SET NULL,
         PRIMARY KEY (class_id, student_id)
       )
     `);

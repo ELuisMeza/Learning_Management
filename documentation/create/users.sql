@@ -7,7 +7,7 @@ CREATE TABLE users (
   document_number VARCHAR(20),
   email VARCHAR(150) UNIQUE NOT NULL,
   password VARCHAR(255),
-  status global_status DEFAULT 'activo',
+  status global_status DEFAULT 'active',
   gender gender_type,
   birthdate DATE,
   phone VARCHAR(20),

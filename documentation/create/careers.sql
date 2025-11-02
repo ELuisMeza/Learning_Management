@@ -7,7 +7,7 @@ CREATE TABLE careers (
     modality teaching_modes NOT NULL,
     duration_years INT CHECK (duration_years > 0),
     total_credits INT CHECK (total_credits >= 0),
-    status global_status DEFAULT 'activo',
+    status global_status DEFAULT 'active',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

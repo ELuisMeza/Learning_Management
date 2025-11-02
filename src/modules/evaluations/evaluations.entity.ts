@@ -12,6 +12,7 @@ import { EvaluationType } from '../evaluation-types/evaluation-types.entity';
 import { Rubric } from '../rubrics/rubrics.entity';
 import { EvaluationModes } from 'src/globals/enums/evaluation-modes.enum';
 import { IsEnum } from 'class-validator';
+import { GlobalStatus } from 'src/globals/enums/global-status.enum';
 
 @Entity('evaluations')
 export class Evaluation {
@@ -58,8 +59,9 @@ export class Evaluation {
   @Column({ name: 'end_date', type: 'timestamp' })
   endDate: Date;
 
-  @Column({ type: 'varchar', default: 'activo' })
-  status: string;
+  @Column({ type: 'enum', enum: GlobalStatus, default: GlobalStatus.ACTIVE })
+  @IsEnum(GlobalStatus)
+  status: GlobalStatus;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;

@@ -7,7 +7,7 @@ CREATE TABLE academic_cycles (
     order_number INT DEFAULT 1,
     credits_required INT DEFAULT 0,
     duration_weeks INT DEFAULT 16,
-    status global_status DEFAULT 'activo',
+    status global_status DEFAULT 'active',
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );

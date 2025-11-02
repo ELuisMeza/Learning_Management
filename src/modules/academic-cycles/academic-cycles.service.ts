@@ -41,7 +41,7 @@ export class AcademicCyclesService {
   async getByIdAndActive(id: string): Promise<AcademicCycle> {
     const academicCycle = await this.academicCycleRepository.findOne({ where: { id, status: GlobalStatus.ACTIVE } });
     if (!academicCycle) {
-      throw new NotFoundException(` ${id} ciclo académico no encontrado o no activo`);
+      throw new NotFoundException(` ${id} ciclo académico no encontrado o no active`);
     }
     return academicCycle;
   }

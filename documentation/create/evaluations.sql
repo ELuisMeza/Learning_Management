@@ -9,7 +9,7 @@ CREATE TABLE evaluations (
     max_score DECIMAL(5,2) DEFAULT 100,
     start_date TIMESTAMP NOT NULL,
     end_date TIMESTAMP NOT NULL,
-    status global_status DEFAULT 'activo',
+    status global_status DEFAULT 'active',
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );

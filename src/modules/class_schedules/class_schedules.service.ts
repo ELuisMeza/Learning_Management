@@ -38,7 +38,7 @@ export class ClassSchedulesService {
   async getByIdAndActive(id: string): Promise<ClassSchedule> {
     const classSchedule = await this.classSchedulesRepository.findOne({ where: { id, status: GlobalStatus.ACTIVE } });
     if (!classSchedule) {
-      throw new NotFoundException(` ${id} horario de clase no encontrado o no activo`);
+      throw new NotFoundException(` ${id} horario de clase no encontrado o no active`);
     }
     return classSchedule;
   }

@@ -5,7 +5,7 @@ CREATE TABLE classes (
   name VARCHAR(150) NOT NULL,
   description TEXT,
   credits INT DEFAULT 0,
-  status global_status DEFAULT 'activo',
+  status global_status DEFAULT 'active',
   teacher_id UUID REFERENCES teachers(id),
   type_teaching teaching_modes default 'in_person' not null,
   max_students INT default 1  not null,

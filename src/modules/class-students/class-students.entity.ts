@@ -38,9 +38,13 @@ export class ClassStudent {
   @IsEnum(EnrollmentStatus)
   status: EnrollmentStatus;
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
-  createdAt: Date;
-
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
   updatedAt: Date;
+
+  @Column({ name: 'user_modified', type: 'uuid', nullable: true })
+  userModifiedId: string;
+
+  @ManyToOne(() => User, { onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'user_modified' })
+  userModified: User;
 }

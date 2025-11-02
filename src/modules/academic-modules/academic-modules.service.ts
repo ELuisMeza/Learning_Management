@@ -37,7 +37,7 @@ export class AcademicModulesService {
   async getByIdAndActive(id: string): Promise<AcademicModule> {
     const academicModule = await this.academicModuleRepository.findOne({ where: { id, status: GlobalStatus.ACTIVE } });
     if (!academicModule) {
-      throw new NotFoundException(` ${id} módulo académico no encontrado o no activo`);
+      throw new NotFoundException(` ${id} módulo académico no encontrado o no active`);
     }
     return academicModule;
   }
