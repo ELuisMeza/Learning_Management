@@ -1,21 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { createEmailTransporter, emailConfig } from '../../config/email.config';
 import * as nodemailer from 'nodemailer';
-
-export interface SendEmailOptions {
-  to: string | string[];
-  subject: string;
-  html?: string;
-  text?: string;
-  attachments?: Array<{
-    filename?: string;
-    path?: string;
-    content?: string | Buffer;
-    cid?: string;
-    contentType?: string;
-    contentDisposition?: 'attachment' | 'inline';
-  }>;
-}
+import { SendEmailOptions } from './dto/SendEmailOptions.dto';
 
 @Injectable()
 export class EmailsService {

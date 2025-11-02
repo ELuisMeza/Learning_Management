@@ -47,4 +47,12 @@ export class ClassesController {
   update(@Param('id') id: string, @Body() updateClassDto: UpdateClassDto) {
     return this.classesService.update(id, updateClassDto);
   }
+
+  @Get(':id/qr')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Generar código QR de la clase' })
+  @ApiOkResponse({ description: 'Código QR generado exitosamente' })
+  async getQRCode(@Param('id') id: string) {
+    return await this.classesService.generateQRCode(id);
+  }
 }

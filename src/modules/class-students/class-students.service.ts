@@ -59,4 +59,36 @@ export class ClassStudentsService {
     const classStudents = await this.classStudentRepository.find({ where: { classId, status: EnrollmentStatus.IN_COURSE } });
     return classStudents.length;
   }
+
+  async matriculateStudentByQR(classId: string, studentId: string): Promise<ClassStudent> {
+    const classStudent = await this.studentIsMatriculated(classId, studentId);
+
+    if (classStudent) {
+      throw new ConflictException('El estudiante ya está matriculado en esta clase');
+    }
+
+    const studentRegister = await this.usersService.isStudent(studentId);
+
+    const classSelected = await this.classesService.getByIdAndActive(classId);
+
+    const currentCantStudents = await this.getCurrentCantStudentsByClassId(classId);
+    if (currentCantStudents >= classSelected.maxStudents) {
+      throw new ConflictException(`La clase ${classSelected.name} ya tiene el máximo de estudiantes permitidos: ${classSelected.maxStudents}`);
+    }
+
+    const newClassStudent: Partial<ClassStudent> = {
+      classId: classSelected.id,
+      studentId: studentRegister.id,
+      class: classSelected,
+      student: studentRegister,
+      userModifiedId: studentId,
+      userModified: studentRegister,
+    };
+
+    try {
+      return await this.classStudentRepository.save(newClassStudent);
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
 }
