@@ -20,7 +20,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api', app, document, {
     swaggerOptions: {
-      // Colocar el tag 'auth' primero y el resto en orden alfabético
       tagsSorter: (a: string, b: string) => {
         if (a === 'auth') return -1;
         if (b === 'auth') return 1;
