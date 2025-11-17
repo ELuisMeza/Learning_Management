@@ -1,14 +1,16 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { LoginDto } from './dto/login.dto';
 import { AuthGuard } from '@nestjs/passport';
-import type { Request } from 'express';
+import type { Request, Response } from 'express';
 
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
+  private readonly frontendUrl: string = process.env.FRONTEND_URL || 'http://localhost:5173';
+
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
@@ -40,12 +42,19 @@ export class AuthController {
     // Inicia el flujo de autenticación con Google
   }
 
-  @Get('google/callback')
+  @Get('google/redirect')
   @UseGuards(AuthGuard('google'))
   @ApiOperation({ summary: 'Callback de Google OAuth' })
-  @ApiOkResponse({ description: 'Retorna JWT como Bearer token después de autenticar con Google' })
-  async googleAuthRedirect(@Req() req: Request) {
-    return this.authService.googleLogin(req.user);
+  @ApiOkResponse({ description: 'Redirige al dashboard con el token JWT' })
+  async googleAuthRedirect(@Req() req: Request, @Res() res: Response) {
+    try {
+      const { access_token } = await this.authService.googleLogin(req.user);
+      const redirectUrl = `${this.frontendUrl}/auth/callback?token=${access_token}`;
+      res.redirect(redirectUrl);
+    } catch (error) {
+      const errorUrl = `${this.frontendUrl}/login`;
+      res.redirect(errorUrl);
+    }
   }
 }
 

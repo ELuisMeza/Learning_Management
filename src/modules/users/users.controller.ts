@@ -30,6 +30,14 @@ export class UsersController {
     private readonly emailsService: EmailsService
   ) {}
 
+  @Get('me')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Obtener usuario autenticado' })
+  @ApiOkResponse({ description: 'Usuario autenticado' })
+  async googleAuthCallback(@Req() req: RequestWithUser) {
+    return this.usersService.getByIdAndActive(req.user.userId);
+  }
+
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Crear usuario' })

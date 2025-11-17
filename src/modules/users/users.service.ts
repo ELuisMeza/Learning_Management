@@ -129,32 +129,17 @@ export class UsersService {
     return user;
   }
 
-  async findOrCreateGoogleUser(googleProfile: any): Promise<User> {
-    const { email, firstName, lastName } = googleProfile;
+  async findGoogleUser(googleProfile: any): Promise<User> {
+    const { email } = googleProfile;
     
     // Buscar si el usuario ya existe por email
     let user = await this.findByEmail(email);
-    
-    if (user) {
-      return user;
+
+    if (!user) {
+      throw new NotFoundException('Usuario no encontrado');
     }
-
-    // Si no existe, crear un nuevo usuario con rol de Estudiante por defecto
-    const studentRole = await this.rolesService.getByName('Estudiante');
     
-    const payloadUser: Partial<User> = {
-      email,
-      name: firstName,
-      lastNameFather: lastName || '',
-      lastNameMother: '',
-      password: undefined, // No se necesita contraseña para usuarios de Google
-      status: GlobalStatus.ACTIVE,
-      gender: GenderType.OTHER,
-      roleId: studentRole.id,
-      createdBy: undefined,
-    };
-
-    return await this.userRepository.save(payloadUser);
+    return user;
   }
 
 }
