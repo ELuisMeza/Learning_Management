@@ -40,7 +40,7 @@ FRONTEND_URL=http://localhost:3000
 # Configuración de Google OAuth
 GOOGLE_CLIENT_ID=tu_google_client_id
 GOOGLE_CLIENT_SECRET=tu_google_client_secret
-GOOGLE_CALLBACK_URL=http://localhost:3001/auth/google/callback
+GOOGLE_CALLBACK_URL=http://localhost:3001/auth/google/redirect
 ```
 
 2. Asegúrate de que la base de datos `DB_NAME` exista en tu servidor PostgreSQL.
