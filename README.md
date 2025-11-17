@@ -181,25 +181,25 @@ El proyecto incluye autenticación con Google OAuth2 que permite a los usuarios 
    - Crea un nuevo proyecto o selecciona uno existente
    - Habilita la API de Google+
    - Ve a "Credenciales" y crea un ID de cliente OAuth 2.0
-   - Configura las URLs de redirección autorizadas (ej: `http://localhost:3001/auth/google/callback`)
+   - Configura las URLs de redirección autorizadas (ej: `http://localhost:3001/auth/google/redirect`)
 
 2. **Configura las variables de entorno** en tu archivo `.env` (ver sección de configuración arriba):
    - `GOOGLE_CLIENT_ID`: Tu Client ID de Google
    - `GOOGLE_CLIENT_SECRET`: Tu Client Secret de Google
-   - `GOOGLE_CALLBACK_URL`: URL de callback (ej: `http://localhost:3001/auth/google/callback`)
+   - `GOOGLE_CALLBACK_URL`: URL de callback (ej: `http://localhost:3001/auth/google/redirect`)
 
 ### Endpoints
 
 - **GET `/auth/google`**: Inicia el flujo de autenticación con Google (redirecciona al login de Google)
-- **GET `/auth/google/callback`**: Callback de Google que procesa la respuesta y retorna el JWT
+- **GET `/auth/google/redirect`**: Callback de Google que procesa la respuesta y retorna el JWT
 
 ### Funcionamiento
 
 1. Los usuarios son redirigidos a Google para autenticarse
 2. Después de autenticarse, Google redirige de vuelta a tu aplicación
-3. Si el usuario no existe en la base de datos, se crea automáticamente con el rol de "Estudiante"
+3. Si el usuario no existe en la base de datos, se redirige al login
 4. Se retorna un JWT que puede ser usado para autenticarse en endpoints protegidos
 
 ### Personalización
 
-Puedes personalizar el rol por defecto para nuevos usuarios modificando el método `findOrCreateGoogleUser` en `src/modules/users/users.service.ts`.
+Puedes personalizar el rol por defecto para nuevos usuarios modificando el método `findGoogleUser` en `src/modules/users/users.service.ts`.
