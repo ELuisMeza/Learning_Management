@@ -17,7 +17,7 @@ export class AuthService {
       throw new UnauthorizedException('No user from Google');
     }
 
-    const dbUser = await this.usersService.findOrCreateGoogleUser(user);
+    const dbUser = await this.usersService.findGoogleUser(user);
     const payload: JwtPayload = { sub: dbUser.id, email: dbUser.email, roleId: dbUser.roleId };
     const access_token = await this.jwtService.signAsync(payload);
     

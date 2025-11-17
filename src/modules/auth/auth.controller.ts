@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';              
 import { AuthService } from './auth.service';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { LoginDto } from './dto/login.dto';
@@ -9,6 +9,8 @@ import type { Request, Response } from 'express';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
+  private readonly frontendUrl: string = process.env.FRONTEND_URL || 'http://localhost:5173';
+
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
@@ -39,24 +41,18 @@ export class AuthController {
   async googleAuth(@Req() req: Request) {
   }
 
-  @Get('google/callback')
+  @Get('google/redirect')
   @UseGuards(AuthGuard('google'))
   @ApiOperation({ summary: 'Callback de Google OAuth' })
-  @ApiOkResponse({ description: 'Retorna JWT como Bearer token después de autenticar con Google' })
+  @ApiOkResponse({ description: 'Redirige al dashboard con el token JWT' })
   async googleAuthRedirect(@Req() req: Request, @Res() res: Response) {
     try {
-      const result = await this.authService.googleLogin(req.user);
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-        
-      const token = encodeURIComponent(result.access_token);
-      const userData = encodeURIComponent(JSON.stringify(result.user));
-      
-      res.redirect(`${frontendUrl}/auth/callback?token=${token}&user=${userData}`);
+      const { access_token } = await this.authService.googleLogin(req.user);
+      const redirectUrl = `${this.frontendUrl}/auth/callback?token=${access_token}`;
+      res.redirect(redirectUrl);
     } catch (error) {
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-      res.redirect(`${frontendUrl}/login?error=google_auth_failed`);
+      const errorUrl = `${this.frontendUrl}/login`;
+      res.redirect(errorUrl);
     }
   }
 }
-
-
