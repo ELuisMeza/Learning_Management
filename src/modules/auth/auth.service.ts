@@ -3,6 +3,7 @@ import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { JwtPayload } from './dto/jwt-payload.dto';
+import { GoogleProfileDto } from '../users/dto/google-profile.dto';
 
 @Injectable()
 export class AuthService {
@@ -12,12 +13,12 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async googleLogin(user: any) {
-    if (!user) {
+  async googleLogin(googleProfile: GoogleProfileDto) {
+    if (!googleProfile) {
       throw new UnauthorizedException('No user from Google');
     }
 
-    const dbUser = await this.usersService.findGoogleUser(user);
+    const dbUser = await this.usersService.findGoogleUser(googleProfile);
     const payload: JwtPayload = { sub: dbUser.id, email: dbUser.email, roleId: dbUser.roleId };
     const access_token = await this.jwtService.signAsync(payload);
     

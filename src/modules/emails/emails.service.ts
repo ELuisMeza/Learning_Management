@@ -25,7 +25,10 @@ export class EmailsService {
       await this.transporter.verify();
       this.logger.log('Conexión con el servidor de correo verificada exitosamente');
     } catch (error) {
-      this.logger.error('Error al verificar la conexión con el servidor de correo:', error);
+      this.logger.warn('Servicio de correo no configurado correctamente. Los emails no se enviarán.');
+      this.logger.warn('Para habilitar el envío de emails, configura las credenciales de Gmail en el archivo .env');
+      this.logger.warn('Variables requeridas: EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASS');
+      // No lanzamos el error, solo lo registramos como advertencia
     }
   }
 
@@ -51,13 +54,18 @@ export class EmailsService {
       attachments,
     };
 
+    // Intentar enviar el correo
     try {
       const info = await this.transporter.sendMail(mailOptions);
       this.logger.log(`Correo enviado exitosamente a: ${to}`);
       return info;
     } catch (error) {
-      this.logger.error('Error al enviar correo:', error);
-      throw error;
+      // Si falla, solo loguear como advertencia pero no lanzar error
+      // Esto permite que la aplicación continúe funcionando aunque el email no esté configurado
+      this.logger.warn(`⚠️  No se pudo enviar el correo a: ${to}. El servicio de correo puede no estar configurado correctamente.`);
+      this.logger.warn('La aplicación continuará funcionando normalmente, pero los emails no se enviarán.');
+      // Retornar un objeto simulado para que no falle el código que espera una respuesta
+      return { messageId: 'email-not-sent', accepted: [], rejected: [] } as nodemailer.SentMessageInfo;
     }
   }
 

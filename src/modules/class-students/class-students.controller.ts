@@ -56,6 +56,16 @@ export class ClassStudentsController {
     return this.classStudentsService.matriculateStudentByQR(createRelationDto.classId, req.user.userId);
   }
 
+  @Get('by-student')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Obtener clases del estudiante autenticado' })
+  @ApiOkResponse({ description: 'Listado de clases del estudiante' })
+  async getMyClasses(@Req() req: RequestWithUser) {
+    return await this.classStudentsService.getClassesByStudentId(req.user.userId);
+  }
+
   @Get('enroll/:classId')
   @ApiOperation({ summary: 'Matricular estudiante automáticamente desde QR (público)' })
   @ApiParam({ name: 'classId', description: 'ID de la clase' })
@@ -99,7 +109,7 @@ export class ClassStudentsController {
           </head>
           <body>
             <div class="error">
-              <h1>❌ Error de Autenticación</h1>
+              <h1> Error de Autenticación</h1>
               <p>Por favor, inicia sesión en la aplicación y vuelve a escanear el código QR.</p>
               <a href="${this.frontendUrl}/login" class="login-link">Ir al Login</a>
               <p><small>Serás redirigido en 5 segundos...</small></p>
@@ -176,7 +186,7 @@ export class ClassStudentsController {
             </head>
             <body style="background: #f5f5f5;">
               <div class="error">
-                <h1>❌ Sesión Expirada</h1>
+                <h1> Sesión Expirada</h1>
                 <p>Tu sesión ha expirado. Por favor, inicia sesión nuevamente.</p>
                 <p><small>Serás redirigido en 5 segundos...</small></p>
               </div>
@@ -196,7 +206,7 @@ export class ClassStudentsController {
             </head>
             <body style="background: #fff3e0;">
               <div class="warning">
-                <h1>ℹ️ Ya estás matriculado</h1>
+                <h1>ℹ Ya estás matriculado</h1>
                 <p>Ya te encuentras matriculado en esta clase.</p>
               </div>
             </body>
@@ -214,7 +224,7 @@ export class ClassStudentsController {
             </head>
             <body style="background: #ffebee;">
               <div class="error">
-                <h1>⚠️ Clase Completa</h1>
+                <h1> Clase Completa</h1>
                 <p>Esta clase ya ha alcanzado el máximo de estudiantes permitidos.</p>
               </div>
             </body>
@@ -232,7 +242,7 @@ export class ClassStudentsController {
             </head>
             <body style="background: #ffebee;">
               <div class="error">
-                <h1>🚫 Acceso Denegado</h1>
+                <h1> Acceso Denegado</h1>
                 <p>Solo los estudiantes pueden matricularse en clases.</p>
               </div>
             </body>
@@ -250,7 +260,7 @@ export class ClassStudentsController {
             </head>
             <body style="background: #ffebee;">
               <div class="error">
-                <h1>❌ Error</h1>
+                <h1> Error</h1>
                 <p>${errorMessage}</p>
               </div>
             </body>
