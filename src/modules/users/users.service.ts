@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Inject, forwardRef, NotFoundException, ConflictException } from '@nestjs/common';
+import { BadRequestException, Injectable, Inject, forwardRef, NotFoundException, ConflictException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DateTime } from 'luxon';
@@ -12,9 +12,14 @@ import { AuthService } from '../auth/auth.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUpdateTeacherDto } from '../teachers/dto/create-teacher.dto';
 import { TeachingModes } from 'src/globals/enums/teaching-modes.enum';
+import { GoogleProfileDto } from './dto/google-profile.dto';
 
 @Injectable()
 export class UsersService {
+  private readonly logger = new Logger(UsersService.name);
+  private static readonly DEFAULT_ROLE_NAME = 'Estudiante';
+  private static readonly DEFAULT_GENDER = GenderType.OTHER;
+
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
@@ -129,17 +134,113 @@ export class UsersService {
     return user;
   }
 
-  async findGoogleUser(googleProfile: any): Promise<User> {
+  /**
+   * Busca o crea un usuario basado en el perfil de Google OAuth
+   * @param googleProfile - Perfil del usuario obtenido de Google
+   * @returns Usuario existente o recién creado
+   */
+  async findGoogleUser(googleProfile: GoogleProfileDto): Promise<User> {
+    this.validateGoogleProfile(googleProfile);
+    
     const { email } = googleProfile;
     
     // Buscar si el usuario ya existe por email
     let user = await this.findByEmail(email);
 
     if (!user) {
-      throw new NotFoundException('Usuario no encontrado');
+      this.logger.log(`Usuario no encontrado para email: ${email}. Creando nuevo usuario automáticamente.`);
+      user = await this.createUserFromGoogleProfile(googleProfile);
+      this.logger.log(`Usuario creado exitosamente con ID: ${user.id}`);
+    } else {
+      this.logger.log(`Usuario existente encontrado para email: ${email}`);
     }
     
     return user;
+  }
+
+  /**
+   * Valida que el perfil de Google contenga los datos necesarios
+   * @param googleProfile - Perfil a validar
+   * @throws BadRequestException si faltan datos requeridos
+   */
+  private validateGoogleProfile(googleProfile: GoogleProfileDto): void {
+    if (!googleProfile?.email) {
+      throw new BadRequestException('El perfil de Google debe contener un email');
+    }
+
+    if (!googleProfile.firstName && !googleProfile.lastName) {
+      throw new BadRequestException('El perfil de Google debe contener al menos un nombre o apellido');
+    }
+  }
+
+  /**
+   * Crea un nuevo usuario a partir del perfil de Google
+   * @param googleProfile - Perfil del usuario de Google
+   * @returns Usuario recién creado con todas sus relaciones
+   */
+  private async createUserFromGoogleProfile(googleProfile: GoogleProfileDto): Promise<User> {
+    try {
+      // Obtener el rol por defecto (Estudiante)
+      const defaultRole = await this.rolesService.getByName(UsersService.DEFAULT_ROLE_NAME);
+      
+      // Preparar los datos del usuario
+      const userData = this.prepareUserDataFromGoogle(googleProfile, defaultRole.id);
+      
+      // Guardar el usuario
+      const newUser = await this.userRepository.save(userData);
+      
+      // Cargar las relaciones para retornar el usuario completo
+      return await this.getByIdAndActive(newUser.id);
+    } catch (error) {
+      this.logger.error(`Error al crear usuario desde Google: ${error.message}`, error.stack);
+      
+      if (error instanceof ConflictException) {
+        throw error;
+      }
+      
+      throw new BadRequestException('Error al crear el usuario desde Google. Por favor, intenta nuevamente.');
+    }
+  }
+
+  /**
+   * Prepara los datos del usuario a partir del perfil de Google
+   * @param googleProfile - Perfil del usuario de Google
+   * @param roleId - ID del rol a asignar
+   * @returns Datos del usuario listos para guardar
+   */
+  private prepareUserDataFromGoogle(
+    googleProfile: GoogleProfileDto,
+    roleId: string,
+  ): Partial<User> {
+    return {
+      name: this.sanitizeName(googleProfile.firstName) || 'Usuario',
+      lastNameFather: this.sanitizeName(googleProfile.lastName) || 'Google',
+      lastNameMother: undefined,
+      email: googleProfile.email.toLowerCase().trim(),
+      password: undefined, // No se requiere password para login con Google
+      status: GlobalStatus.ACTIVE,
+      gender: UsersService.DEFAULT_GENDER,
+      birthdate: undefined,
+      phone: undefined,
+      documentType: undefined,
+      documentNumber: undefined,
+      roleId: roleId,
+      createdBy: undefined, // Auto-creado por Google OAuth
+    };
+  }
+
+  /**
+   * Sanitiza y valida nombres para evitar valores inválidos
+   * @param name - Nombre a sanitizar
+   * @returns Nombre sanitizado o undefined si está vacío
+   */
+  private sanitizeName(name: string | undefined): string | undefined {
+    if (!name || typeof name !== 'string') {
+      return undefined;
+    }
+    
+    const sanitized = name.trim();
+    return sanitized.length > 0 ? sanitized : undefined;
   }
 
 }

@@ -1,17 +1,16 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString, IsNotEmpty, IsUUID } from "class-validator";
+import { IsString, IsNotEmpty, IsUUID, IsOptional } from "class-validator";
 import { UpdateClassDto } from "./update-class.dto";
 import { MaxLength } from "class-validator";
 
 export class CreateClassDto extends UpdateClassDto {
-  @ApiProperty({ example: 'ING-001', description: 'Código de la clase' })
+  @ApiProperty({ example: 'ING-001', description: 'Código de la clase (opcional, se genera automáticamente si no se proporciona)', required: false })
   @IsString()
-  @IsNotEmpty()
   @MaxLength(10)
-  code: string;
+  code?: string;
 
-  @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000', description: 'ID del módulo académico' })
+  @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000', description: 'ID del módulo académico', required: false })
   @IsUUID()
-  @IsNotEmpty()
-  moduleId: string;
+  @IsOptional()
+  moduleId?: string;
 }

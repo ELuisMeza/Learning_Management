@@ -7,36 +7,35 @@ export class UpdateClassDto {
   @ApiProperty({ example: 'Clase de Ingeniería', description: 'Nombre de la clase' })
   @IsString()
   @IsNotEmpty()
-  @IsString()
   name: string;
 
-  @ApiProperty({ example: 'Descripción de la clase', description: 'Descripción de la clase' })
+  @ApiProperty({ example: 'Descripción de la clase', description: 'Descripción de la clase', required: false })
   @IsString()
-  @IsNotEmpty()
-  description: string;
+  @IsOptional()
+  description?: string;
 
-  @ApiProperty({ example: 120, description: 'Créditos de la clase' })
+  @ApiProperty({ example: 120, description: 'Créditos de la clase', required: false })
   @IsInt()
-  @IsNotEmpty()
-  credits: number;
+  @IsOptional()
+  credits?: number;
 
-  @ApiProperty({ example: 10, description: 'Máximo de estudiantes de la clase' })
+  @ApiProperty({ example: 10, description: 'Máximo de estudiantes de la clase', required: false })
   @IsInt()
-  @IsNotEmpty()
-  maxStudents: number;  
+  @IsOptional()
+  maxStudents?: number;  
 
-  @ApiProperty({ enum: GlobalStatus, example: GlobalStatus.ACTIVE, description: 'Estado de la clase' })
+  @ApiProperty({ enum: GlobalStatus, example: GlobalStatus.ACTIVE, description: 'Estado de la clase', required: false })
   @IsEnum(GlobalStatus)
   @IsOptional()
-  status: GlobalStatus;
+  status?: GlobalStatus;
 
-  @ApiProperty({ enum: TeachingModes, example: TeachingModes.IN_PERSON, description: 'Tipo de enseñanza de la clase' })
+  @ApiProperty({ enum: TeachingModes, example: TeachingModes.IN_PERSON, description: 'Tipo de enseñanza de la clase', required: false })
   @IsEnum(TeachingModes)
-  @IsNotEmpty()
-  typeTeaching: TeachingModes;
+  @IsOptional()
+  typeTeaching?: TeachingModes;
 
-  @ApiProperty({ example: 'ID del profesor de la clase', description: 'Profesor de la clase' })
-  @IsNotEmpty()
+  @ApiProperty({ example: 'ID del profesor de la clase', description: 'Profesor de la clase', required: false })
   @IsUUID()
-  teacherId: string;
+  @IsOptional()
+  teacherId?: string;
 } 
