@@ -1,10 +1,9 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res, UseGuards, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { LoginDto } from './dto/login.dto';
 import { AuthGuard } from '@nestjs/passport';
 import type { Request, Response } from 'express';
-import { GoogleProfileDto } from '../users/dto/google-profile.dto';
 
 
 @ApiTags('auth')
@@ -40,33 +39,20 @@ export class AuthController {
   @ApiOperation({ summary: 'Iniciar autenticación con Google' })
   @HttpCode(HttpStatus.OK)
   async googleAuth(@Req() req: Request) {
+    // Inicia el flujo de autenticación con Google
   }
 
   @Get('google/redirect')
   @UseGuards(AuthGuard('google'))
   @ApiOperation({ summary: 'Callback de Google OAuth' })
   @ApiOkResponse({ description: 'Redirige al dashboard con el token JWT' })
-  async googleAuthRedirect(@Req() req: Request & { user?: GoogleProfileDto }, @Res() res: Response) {
+  async googleAuthRedirect(@Req() req: Request, @Res() res: Response) {
     try {
-      if (!req.user) {
-        throw new UnauthorizedException('No se recibió información del usuario de Google');
-      }
-      
-      const { access_token, user } = await this.authService.googleLogin(req.user);
-      const token = encodeURIComponent(access_token);
-      const userData = encodeURIComponent(JSON.stringify(user));
-      const redirectUrl = `${this.frontendUrl}/auth/callback?token=${token}&user=${userData}`;
+      const { access_token } = await this.authService.googleLogin(req.user);
+      const redirectUrl = `${this.frontendUrl}/auth/callback?token=${access_token}`;
       res.redirect(redirectUrl);
     } catch (error) {
-      let errorMessage = 'google_auth_failed';
-      
-      if (error instanceof NotFoundException) {
-        errorMessage = 'user_not_found';
-      } else if (error instanceof UnauthorizedException) {
-        errorMessage = 'unauthorized';
-      }
-      
-      const errorUrl = `${this.frontendUrl}/login?error=${errorMessage}`;
+      const errorUrl = `${this.frontendUrl}/login`;
       res.redirect(errorUrl);
     }
   }
