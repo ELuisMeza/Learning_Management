@@ -131,4 +131,13 @@ export class ClassStudentsService {
       return [];
     }
   }
+
+  async getStadisticsStudentsMatriculated() {
+    const data = await this.classStudentRepository.createQueryBuilder('classStudent')
+    .select('class.module.name', 'moduleName')
+    .addSelect('COUNT(classStudent.classId)', 'count')
+    .groupBy('class.module.name')
+    .getRawMany();
+    return data;
+  }
 }

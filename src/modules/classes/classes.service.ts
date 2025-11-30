@@ -13,8 +13,6 @@ import * as QRCode from 'qrcode';
 @Injectable()
 export class ClassesService {
 
-  private readonly backendUrl: string = process.env.BACKEND_URL || `http://localhost:${process.env.PORT || 3001}`;
-
   constructor(
     @InjectRepository(Class)
     private readonly classRepository: Repository<Class>,
@@ -166,5 +164,41 @@ export class ClassesService {
     
     return classRegister;
   }
+
+ async getStadistics() {
+  const totalActiveClasses = await this.classRepository.count({
+    where: { status: GlobalStatus.ACTIVE }
+  });
+
+  const classesByTeachingMode = await this.classRepository.createQueryBuilder('class')
+    .select('class.typeTeaching', 'typeTeaching')
+    .addSelect('COUNT(class.id)', 'count')
+    .where('class.status = :status', { status: GlobalStatus.ACTIVE })
+    .groupBy('class.typeTeaching')
+    .getRawMany();
+
+  const modeMap = new Map<string, string>();
+  classesByTeachingMode.forEach(item => {
+    modeMap.set(item.typeTeaching, String(item.count));
+  });
+
+  const allModes = [
+    TeachingModes.IN_PERSON,
+    TeachingModes.ONLINE,
+    TeachingModes.HYBRID
+  ];
+
+  const byTeachingMode = allModes.map(mode => ({
+    typeTeaching: mode,
+    count: modeMap.get(mode) || '0'
+  }));
+
+  return {
+    classes: {
+      totalActiveClasses: totalActiveClasses || 0,
+      byTeachingMode
+    }
+  };
+ }
 
 }

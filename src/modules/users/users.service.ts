@@ -142,4 +142,14 @@ export class UsersService {
     return user;
   }
 
+  async getStadisticsStudents() {
+    const totalActiveStudents = await this.userRepository.count({
+      where: { role: { name: 'Estudiante' }, status: GlobalStatus.ACTIVE }
+    });
+
+    return {
+      totalActiveStudents,
+    };
+  }
+
 }

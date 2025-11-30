@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Career } from './careers.entity';
 import { CreateCareerDto } from './dto/create-career.dto';
 import { GlobalStatus } from 'src/globals/enums/global-status.enum';
+import { TeachingModes } from 'src/globals/enums/teaching-modes.enum';
 import { UpdateCareerDto } from './dto/update-career.dto';
 
 @Injectable()
@@ -40,4 +41,39 @@ export class CareersService {
     return career;
   }
 
+  async getStadistics() {
+    const totalActiveCareers = await this.careerRepository.count({
+      where: { status: GlobalStatus.ACTIVE }
+    });
+
+    const careersByModality = await this.careerRepository.createQueryBuilder('career')
+      .select('career.modality', 'modality')
+      .addSelect('COUNT(career.id)', 'count')
+      .where('career.status = :status', { status: GlobalStatus.ACTIVE })
+      .groupBy('career.modality')
+      .getRawMany();
+
+    const modalityMap = new Map<string, string>();
+    careersByModality.forEach(item => {
+      modalityMap.set(item.modality, String(item.count));
+    });
+
+    const allModes = [
+      TeachingModes.IN_PERSON,
+      TeachingModes.ONLINE,
+      TeachingModes.HYBRID
+    ];
+
+    const byModality = allModes.map(mode => ({
+      modality: mode,
+      count: modalityMap.get(mode) || '0'
+    }));
+
+    return {
+      careers: {
+        totalActiveCareers: totalActiveCareers || 0,
+        byModality
+      }
+    };
+  }
 }

@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Teacher } from './teachers.entity';
 import { CreateUpdateTeacherDto } from './dto/create-teacher.dto';
 import { GlobalStatus } from 'src/globals/enums/global-status.enum';
+import { TeachingModes } from 'src/globals/enums/teaching-modes.enum';
 
 @Injectable()
 export class TeachersService {
@@ -37,5 +38,41 @@ export class TeachersService {
       throw new NotFoundException(`Teacher with ID ${id} not found`);
     }
     return teacher;
+  }
+
+  async getStadisticsTeachers() {
+    const totalActiveTeachers = await this.teacherRepository.count({
+      where: { status: GlobalStatus.ACTIVE }
+    });
+
+    const teachersByTeachingMode = await this.teacherRepository.createQueryBuilder('teacher')
+      .select('teacher.teachingModes', 'teachingModes')
+      .addSelect('COUNT(teacher.id)', 'count')
+      .where('teacher.status = :status', { status: GlobalStatus.ACTIVE })
+      .groupBy('teacher.teachingModes')
+      .getRawMany();
+
+    const modeMap = new Map<string, string>();
+    teachersByTeachingMode.forEach(item => {
+      modeMap.set(item.teachingModes, String(item.count));
+    });
+
+    const allModes = [
+      TeachingModes.IN_PERSON,
+      TeachingModes.ONLINE,
+      TeachingModes.HYBRID
+    ];
+
+    const byTeachingMode = allModes.map(mode => ({
+      teachingModes: mode,
+      count: modeMap.get(mode) || '0'
+    }));
+
+    return {
+      teachers: {
+        totalActiveTeachers: totalActiveTeachers || 0,
+        byTeachingMode
+      }
+    };
   }
 }
