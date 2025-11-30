@@ -91,4 +91,44 @@ export class ClassStudentsService {
       throw new InternalServerErrorException(error.message);
     }
   }
+
+  /**
+   * Obtiene todos los estudiantes de una clase
+   */
+  async getStudentsByClassId(classId: string): Promise<ClassStudent[]> {
+    // Verificar que la clase existe
+    await this.classesService.getByIdAndActive(classId);
+    
+    return await this.classStudentRepository.find({
+      where: { classId },
+      relations: ['student', 'student.role'],
+      order: { enrollmentDate: 'DESC' },
+    });
+  }
+
+  /**
+   * Obtiene todas las clases de un estudiante
+   */
+  async getClassesByStudentId(studentId: string): Promise<ClassStudent[]> {
+    try {
+      // Verificar que el usuario existe y está activo
+      const user = await this.usersService.getByIdAndActive(studentId);
+      
+      // Si el usuario no es estudiante, retornar array vacío
+      // Esto permite que cualquier usuario vea sus clases (si las tiene)
+      if (!user.role || user.role.name !== 'Estudiante') {
+        return [];
+      }
+      
+      return await this.classStudentRepository.find({
+        where: { studentId },
+        relations: ['class', 'class.module', 'class.teacher'],
+        order: { enrollmentDate: 'DESC' },
+      });
+    } catch (error) {
+      // Si hay algún error, retornar array vacío en lugar de propagar el error
+      console.error('Error al obtener clases del estudiante:', error);
+      return [];
+    }
+  }
 }
