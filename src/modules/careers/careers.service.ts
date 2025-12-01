@@ -6,6 +6,7 @@ import { CreateCareerDto } from './dto/create-career.dto';
 import { GlobalStatus } from 'src/globals/enums/global-status.enum';
 import { TeachingModes } from 'src/globals/enums/teaching-modes.enum';
 import { UpdateCareerDto } from './dto/update-career.dto';
+import { BasePayloadGetDto } from 'src/globals/dto/base-payload-get.dto';
 
 @Injectable()
 export class CareersService {
@@ -19,8 +20,35 @@ export class CareersService {
     return await this.careerRepository.save(career);
   }
 
-  async findAll(): Promise<Career[]> {
-    return await this.careerRepository.find({ where: { status: GlobalStatus.ACTIVE } });
+  async findAll(getAllDto: BasePayloadGetDto): Promise<{ data: Career[], pagination: { page: number, limit: number, total: number, totalPages: number } }> {
+    const { page = 1, limit = 10, search } = getAllDto;
+    const queryBuilder = this.careerRepository
+      .createQueryBuilder('career')
+
+    if (search) {
+      queryBuilder.andWhere(
+        '(career.name ILIKE :search OR career.code ILIKE :search OR career.description ILIKE :search)',
+        { search: `%${search}%` }
+      );
+    }
+
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await queryBuilder
+      .orderBy('career.name', 'ASC')
+      .skip(skip)
+      .take(limit)
+      .getManyAndCount();
+
+    return {
+      data: data as Career[],
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 
   async update(id: string, updateCareerDto: UpdateCareerDto): Promise<Career> {

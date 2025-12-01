@@ -33,9 +33,4 @@ export class UpdateAcademicCycleDto {
   @IsNotEmpty()
   @Min(1)
   durationWeeks: number;
-
-  @ApiProperty({ enum: GlobalStatus, example: GlobalStatus.ACTIVE, description: 'Estado del ciclo académico' })
-  @IsEnum(GlobalStatus)
-  @IsOptional()
-  status: GlobalStatus;
 }

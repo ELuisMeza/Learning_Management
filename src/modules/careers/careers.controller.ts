@@ -11,11 +11,12 @@ import {
   Put,
 } from '@nestjs/common';
 import { CareersService } from './careers.service';
-import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateCareerDto } from './dto/create-career.dto';
 import { UpdateCareerDto } from './dto/update-career.dto';
+import { BasePayloadGetDto } from 'src/globals/dto/base-payload-get.dto';
 
 @ApiTags('careers')
 @ApiBearerAuth()
@@ -23,6 +24,15 @@ import { UpdateCareerDto } from './dto/update-career.dto';
 @Controller('careers')
 export class CareersController {
   constructor(private readonly careersService: CareersService) {}
+  
+  @Post('get-all')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Listar carreras con paginación y búsqueda' })
+  @ApiBody({ type: BasePayloadGetDto })
+  @ApiOkResponse({ description: 'Listado paginado de carreras' })
+  getAll(@Body() getAllDto: BasePayloadGetDto) {
+    return this.careersService.findAll(getAllDto);
+  }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -30,14 +40,6 @@ export class CareersController {
   @ApiCreatedResponse({ description: 'Carrera creada' })
   create(@Body() createCareerDto: CreateCareerDto) {
     return this.careersService.create(createCareerDto);
-  }
-
-  @Get()
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Listar carreras' })
-  @ApiOkResponse({ description: 'Listado de carreras' })
-  findAll() {
-    return this.careersService.findAll();
   }
 
   @Put(':id')

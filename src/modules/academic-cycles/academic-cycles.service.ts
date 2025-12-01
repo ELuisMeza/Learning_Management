@@ -6,6 +6,7 @@ import { CreateAcademicCycleDto } from './dto/create-cycles.dto';
 import { CareersService } from '../careers/careers.service';
 import { GlobalStatus } from 'src/globals/enums/global-status.enum';
 import { UpdateAcademicCycleDto } from './dto/update-cycles';
+import { BasePayloadGetDto } from 'src/globals/dto/base-payload-get.dto';
 
 @Injectable()
 export class AcademicCyclesService {
@@ -52,5 +53,46 @@ export class AcademicCyclesService {
       throw new NotFoundException(` ${id} ciclo académico no encontrado`);
     }
     return academicCycle;
+  }
+
+  async getAll(getAllDto: BasePayloadGetDto) {
+    const { page = 1, limit = 10, search } = getAllDto;
+    const queryBuilder = this.academicCycleRepository
+      .createQueryBuilder('cycle')
+      .addSelect('career.name', 'careerName')
+      .leftJoin('cycle.career', 'career')
+      .where('cycle.status = :status', { status: GlobalStatus.ACTIVE });
+
+    if (search) {
+      queryBuilder.andWhere(
+        '(cycle.name ILIKE :search OR cycle.code ILIKE :search OR cycle.description ILIKE :search)',
+        { search: `%${search}%` }
+      );
+    }
+
+    const skip = (page - 1) * limit;
+
+    const total = await queryBuilder.getCount();
+
+    const { entities, raw } = await queryBuilder
+      .orderBy('cycle.orderNumber', 'ASC')
+      .skip(skip)
+      .take(limit)
+      .getRawAndEntities();
+
+    const data = entities.map((entity, index) => ({
+      ...entity,
+      careerName: raw[index].careerName,
+    }));
+
+    return {
+      data,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 }
