@@ -44,6 +44,7 @@ export class UsersService {
     }
 
       const payloadTeacher: CreateUpdateTeacherDto = {
+        appellative: createUserDto.name + ' ' + createUserDto.lastNameFather || '',
         specialty: createUserDto.specialty || '',
         academicDegree: createUserDto.academicDegree || '',
         experienceYears: createUserDto.experienceYears || 0,
@@ -105,6 +106,7 @@ export class UsersService {
 
 
       const payloadTeacher: CreateUpdateTeacherDto = {
+        appellative: user.teacher.appellative || '',
         specialty: updateUserDto.specialty || '',
         academicDegree: updateUserDto.academicDegree || '',
         experienceYears: updateUserDto.experienceYears || 0,

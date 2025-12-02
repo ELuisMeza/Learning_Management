@@ -17,6 +17,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateAcademicModuleDto } from './dto/create-module.dto';
 import { AcademicModule } from './academic-modules.entity';
 import { UpdateAcademicModuleDto } from './dto/update-module.dto';
+import { BasePayloadGetDto } from 'src/globals/dto/base-payload-get.dto';
 
 @ApiTags('academic-modules')
 @ApiBearerAuth()
@@ -24,7 +25,17 @@ import { UpdateAcademicModuleDto } from './dto/update-module.dto';
 @Controller('academic-modules')
 export class AcademicModulesController {
   constructor(private readonly academicModulesService: AcademicModulesService) {}
-  
+
+
+  @Post('get-all')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Listar todos los módulos académicos con paginación y búsqueda' })
+  @ApiBody({ type: BasePayloadGetDto })
+  @ApiOkResponse({ description: 'Listado paginado de módulos académicos' })
+  getAll(@Body() getAllDto: BasePayloadGetDto) {
+    return this.academicModulesService.getAll(getAllDto);
+  }
+
   @Get('by-cycle/:cycleId')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Obtener módulos académicos por ID de ciclo' })

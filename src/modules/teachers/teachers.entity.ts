@@ -31,6 +31,9 @@ export class Teacher {
   @Column({ name: 'teaching_modes', type: 'varchar', default: 'semipresencial' })
   teachingModes: string;
 
+  @Column({ name: 'appellative', type: 'varchar', length: 150 })
+  appellative: string;
+
   @Column({ type: 'enum', enum: GlobalStatus, default: GlobalStatus.ACTIVE })
   @IsEnum(GlobalStatus)
   status: GlobalStatus;

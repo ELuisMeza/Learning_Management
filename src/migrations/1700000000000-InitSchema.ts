@@ -33,6 +33,7 @@ export class InitSchema1700000000000 implements MigrationInterface {
         bio TEXT,
         cv_url VARCHAR(255),
         teaching_modes teaching_modes DEFAULT 'hybrid',
+        appellative VARCHAR(150) NOT NULL,
         status global_status DEFAULT 'active',
         created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
         updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()

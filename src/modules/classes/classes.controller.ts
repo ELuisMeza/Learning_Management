@@ -12,13 +12,14 @@ import {
   Req,
 } from '@nestjs/common';
 import { ClassesService } from './classes.service';
-import { ApiBearerAuth, ApiCreatedResponse, ApiNoContentResponse, ApiOkResponse, ApiOperation, ApiTags, ApiParam } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiCreatedResponse, ApiNoContentResponse, ApiOkResponse, ApiOperation, ApiTags, ApiParam, ApiBody } from '@nestjs/swagger';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateClassDto } from './dto/create-class.dto';
 import { UpdateClassDto } from './dto/update-class.dto';
 import type { RequestWithUser } from 'src/globals/types/request-with-user.type';
 import { ClassStudentsService } from '../class-students/class-students.service';
+import { BasePayloadGetDto } from 'src/globals/dto/base-payload-get.dto';
 
 @ApiTags('classes')
 @ApiBearerAuth()
@@ -30,19 +31,28 @@ export class ClassesController {
     private readonly classStudentsService: ClassStudentsService,
   ) {}
 
+  @Post('get-all')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Listar todas las clases con paginación y búsqueda' })
+  @ApiBody({ type: BasePayloadGetDto })
+  @ApiOkResponse({ description: 'Listado paginado de clases' })
+  getAll(@Body() getAllDto: BasePayloadGetDto) {
+    return this.classesService.getAll(getAllDto);
+  }
+
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Crear clase' })
   @ApiCreatedResponse({ description: 'Clase creada' })
-  create(@Body() createClassDto: CreateClassDto, @Req() req: RequestWithUser) {
-    return this.classesService.create(createClassDto, req.user.userId);
+  create(@Body() createClassDto: CreateClassDto) {
+    return this.classesService.create(createClassDto);
   }
 
   @Get()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Obtener todas las clases del docente autenticado' })
   @ApiOkResponse({ description: 'Listado de clases del docente' })
-  getAll(@Req() req: RequestWithUser) {
+  getAllByTeacherId(@Req() req: RequestWithUser) {
     return this.classesService.getAllByTeacherId(req.user.userId);
   }
 

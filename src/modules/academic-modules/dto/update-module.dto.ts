@@ -20,9 +20,4 @@ export class UpdateAcademicModuleDto {
   @IsNotEmpty()
   @Min(1)
   orderNumber: number;  
-
-  @ApiProperty({ enum: GlobalStatus, example: GlobalStatus.ACTIVE, description: 'Estado del módulo académico' })
-  @IsEnum(GlobalStatus)
-  @IsOptional()
-  status: GlobalStatus;
 }

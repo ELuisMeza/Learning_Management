@@ -24,11 +24,6 @@ export class UpdateClassDto {
   @IsOptional()
   maxStudents?: number;  
 
-  @ApiProperty({ enum: GlobalStatus, example: GlobalStatus.ACTIVE, description: 'Estado de la clase', required: false })
-  @IsEnum(GlobalStatus)
-  @IsOptional()
-  status?: GlobalStatus;
-
   @ApiProperty({ enum: TeachingModes, example: TeachingModes.IN_PERSON, description: 'Tipo de enseñanza de la clase', required: false })
   @IsEnum(TeachingModes)
   @IsOptional()

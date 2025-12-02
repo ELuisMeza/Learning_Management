@@ -6,6 +6,7 @@ import { CreateAcademicModuleDto } from './dto/create-module.dto';
 import { UpdateAcademicModuleDto } from './dto/update-module.dto';
 import { GlobalStatus } from 'src/globals/enums/global-status.enum';
 import { AcademicCyclesService } from '../academic-cycles/academic-cycles.service';
+import { BasePayloadGetDto } from 'src/globals/dto/base-payload-get.dto';
 
 @Injectable()
 export class AcademicModulesService {
@@ -48,5 +49,46 @@ export class AcademicModulesService {
     const academicModules = await this.academicModuleRepository.find({ where: { cycleId: academicCycle.id } });
 
     return academicModules;
+  }
+
+  async getAll(getAllDto: BasePayloadGetDto): Promise<{ data: AcademicModule[], pagination: { page: number, limit: number, total: number, totalPages: number } }> {
+    const { page = 1, limit = 10, search } = getAllDto;
+    const queryBuilder = this.academicModuleRepository
+      .createQueryBuilder('module')
+      .addSelect('cycle.name', 'cycleName')
+      .leftJoin('module.cycle', 'cycle')
+      .where('module.status = :status', { status: GlobalStatus.ACTIVE });
+
+    if (search) {
+      queryBuilder.andWhere(
+        '(module.name ILIKE :search OR module.code ILIKE :search OR module.description ILIKE :search)',
+        { search: `%${search}%` }
+      );
+    }
+
+    const skip = (page - 1) * limit;
+
+    const total = await queryBuilder.getCount();
+
+    const { entities, raw } = await queryBuilder
+      .orderBy('module.orderNumber', 'ASC')
+      .skip(skip)
+      .take(limit)
+      .getRawAndEntities();
+
+    const data = entities.map((entity, index) => ({
+      ...entity,
+      cycleName: raw[index].cycleName,
+    }));
+
+    return {
+      data,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 }

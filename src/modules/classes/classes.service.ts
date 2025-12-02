@@ -9,6 +9,7 @@ import { AcademicModulesService } from '../academic-modules/academic-modules.ser
 import { UpdateClassDto } from './dto/update-class.dto';
 import { UsersService } from '../users/users.service';
 import * as QRCode from 'qrcode';
+import { BasePayloadGetDto } from 'src/globals/dto/base-payload-get.dto';
 
 @Injectable()
 export class ClassesService {
@@ -20,38 +21,22 @@ export class ClassesService {
     private readonly usersService: UsersService,
   ) {}
 
-  async create(createClassDto: CreateClassDto, teacherId?: string): Promise<Class> {
+  async   create(createClassDto: CreateClassDto): Promise<Class> {
     try {
-      // Validar que se proporcione moduleId
-      if (!createClassDto.moduleId) {
-        throw new BadRequestException('El moduleId es requerido para crear una clase. Por favor, proporciona un módulo académico válido.');
-      }
-      
+
       await this.academicModuleService.getByIdAndActive(createClassDto.moduleId);
       
-      // Obtener el teacherId del usuario si no se proporciona
-      let finalTeacherId = teacherId;
-      if (teacherId) {
-        const user = await this.usersService.getByIdAndActive(teacherId);
-        finalTeacherId = user.teacherId || undefined;
-      }
-      
-      // Generar código automáticamente si no se proporciona
-      let code = createClassDto.code;
-      if (!code || code.trim() === '') {
-        code = this.generateClassCode();
-      }
       
       const classData: Partial<Class> = {
         name: createClassDto.name,
         description: createClassDto.description || '',
         credits: createClassDto.credits || 0,
         maxStudents: createClassDto.maxStudents || 30,
-        status: createClassDto.status || GlobalStatus.ACTIVE,
+        status: GlobalStatus.ACTIVE,
         typeTeaching: createClassDto.typeTeaching || TeachingModes.IN_PERSON,
-        code: code.toUpperCase(),
+        code: createClassDto.code.toUpperCase(),
         moduleId: createClassDto.moduleId,
-        teacherId: finalTeacherId,
+        teacherId: createClassDto.teacherId || undefined,
       };
       
       return await this.classRepository.save(classData);
@@ -61,27 +46,6 @@ export class ClassesService {
       }
       throw new InternalServerErrorException(error.message);
     } 
-  }
-
-  /**
-   * Genera un código único para la clase
-   * Formato: 3 letras aleatorias + 3 números
-   */
-  private generateClassCode(): string {
-    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    const numbers = '0123456789';
-    
-    let code = '';
-    // 3 letras aleatorias
-    for (let i = 0; i < 3; i++) {
-      code += letters.charAt(Math.floor(Math.random() * letters.length));
-    }
-    // 3 números aleatorios
-    for (let i = 0; i < 3; i++) {
-      code += numbers.charAt(Math.floor(Math.random() * numbers.length));
-    }
-    
-    return code;
   }
 
   async getAllByModuleId(moduleId: string): Promise<Class[]> {
@@ -201,4 +165,44 @@ export class ClassesService {
   };
  }
 
+  async getAll(getAllDto: BasePayloadGetDto): Promise<{ data: Class[], pagination: { page: number, limit: number, total: number, totalPages: number } }> {
+    const { page = 1, limit = 10, search } = getAllDto;
+    const queryBuilder = this.classRepository.createQueryBuilder('class')
+      .leftJoin('class.module', 'module')
+      .leftJoin('class.teacher', 'teacher')
+      .addSelect('teacher.appellative', 'appellative')
+      .addSelect('module.name', 'moduleName')
+      .where('class.status = :status', { status: GlobalStatus.ACTIVE });
+
+    if (search) {
+      queryBuilder.andWhere(
+        '(class.name ILIKE :search OR class.code ILIKE :search OR class.description ILIKE :search)',
+        { search: `%${search}%` }
+      );
+    }
+
+    const skip = (page - 1) * limit;
+
+    const total = await queryBuilder.getCount();
+
+    const { entities, raw } = await queryBuilder
+      .orderBy('class.name', 'ASC')
+      .skip(skip)
+      .take(limit)
+      .getRawAndEntities();
+
+    return {
+      data: entities.map((entity, index) => ({
+        ...entity,
+        moduleName: raw[index].moduleName,
+        appellative: raw[index].appellative, 
+      })),
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
 }
