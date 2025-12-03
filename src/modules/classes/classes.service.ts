@@ -21,7 +21,7 @@ export class ClassesService {
     private readonly usersService: UsersService,
   ) {}
 
-  async   create(createClassDto: CreateClassDto): Promise<Class> {
+  async create(createClassDto: CreateClassDto): Promise<Class> {
     try {
 
       await this.academicModuleService.getByIdAndActive(createClassDto.moduleId);
@@ -66,7 +66,7 @@ export class ClassesService {
   async getByIdAndActive(id: string): Promise<Class> {
     const classRegister = await this.classRepository.findOne({
       where: { id, status: GlobalStatus.ACTIVE },
-      relations: ['module', 'teacher', 'teacher.user'],
+      relations: ['module', 'teacher'],
     });
     if (!classRegister) {
       throw new NotFoundException(`Clase con ID ${id} no encontrada`);
