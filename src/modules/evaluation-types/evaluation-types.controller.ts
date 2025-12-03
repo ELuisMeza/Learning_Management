@@ -21,4 +21,12 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 export class EvaluationTypesController {
   constructor(private readonly evaluationTypesService: EvaluationTypesService) {}
 
+  @Get()
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Listar todos los tipos de evaluación' })
+  @ApiOkResponse({ description: 'Listado de tipos de evaluación' })
+  async getAll() {
+    return this.evaluationTypesService.getAll();
+  }
+
 }

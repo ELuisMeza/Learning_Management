@@ -23,6 +23,9 @@ import { AuthModule } from './modules/auth/auth.module';
 import { ClassSchedulesModule } from './modules/class_schedules/class_schedules.module';
 import { EmailsModule } from './modules/emails/emails.module';
 import { StadisticsModule } from './modules/stadistics/stadistics.module';
+import { EvaluationsQuestionsModule } from './modules/evaluations_questions/evaluations_questions.module';
+import { EvaluationAnswersModule } from './modules/evaluation_answers/evaluation_answers.module';
+import { EvaluationsQuestionOptionsModule } from './modules/evaluations_question_options/evaluations_question_options.module';
 
 @Module({
   imports: [
@@ -45,6 +48,9 @@ import { StadisticsModule } from './modules/stadistics/stadistics.module';
     ClassSchedulesModule,
     EmailsModule,
     StadisticsModule,
+    EvaluationsQuestionsModule,
+    EvaluationAnswersModule,
+    EvaluationsQuestionOptionsModule
   ],
   controllers: [AppController],
   providers: [AppService],

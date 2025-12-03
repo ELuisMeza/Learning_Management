@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDate, IsEnum, IsNotEmpty, IsNumber, IsString, IsUUID } from "class-validator";
+import { IsDate, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
 import { EvaluationModes } from "src/globals/enums/evaluation-modes.enum";
 
 export class CreateEvaluationDto {
@@ -30,9 +30,9 @@ export class CreateEvaluationDto {
   evaluationTypeId: string; 
 
   @ApiProperty({ example: 'f5f8b4f0-3f07-4c0f-8a0a-4b4a5b7a9a1c', description: 'ID de la rúbrica' })
-  @IsNotEmpty()
+  @IsOptional()
   @IsUUID()
-  rubricId: string;
+  rubricId?: string;
 
   @ApiProperty({ example: 100, description: 'Puntaje máximo de la evaluación' })
   @IsNotEmpty()
@@ -41,11 +41,11 @@ export class CreateEvaluationDto {
 
   @ApiProperty({ example: '2025-01-01', description: 'Fecha de inicio de la evaluación' })
   @IsNotEmpty()
-  @IsDate()
-  startDate: Date;
+  @IsString()
+  startDate: string;
 
   @ApiProperty({ example: '2025-01-01', description: 'Fecha de fin de la evaluación' })
   @IsNotEmpty()
-  @IsDate()
-  endDate: Date;
+  @IsString()
+  endDate: string;
 }
