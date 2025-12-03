@@ -6,6 +6,7 @@ import { CreateUpdateTeacherDto } from './dto/create-teacher.dto';
 import { GlobalStatus } from 'src/globals/enums/global-status.enum';
 import { TeachingModes } from 'src/globals/enums/teaching-modes.enum';
 import { BasePayloadGetDto } from 'src/globals/dto/base-payload-get.dto';
+import { GetTeachersDto } from './dto/get-teachers.dto';
 
 @Injectable()
 export class TeachersService {
@@ -77,17 +78,24 @@ export class TeachersService {
     };
   }
 
-  async getAll(getAllDto: BasePayloadGetDto): Promise<{ data: Teacher[], pagination: { page: number, limit: number, total: number, totalPages: number } }> {
-    const { page = 1, limit = 10, search } = getAllDto;
+  async getAll(getAllDto: GetTeachersDto): Promise<{ data: Teacher[], pagination: { page: number, limit: number, total: number, totalPages: number } }> {
+    const { page = 1, limit = 10, search, status, teachingMode } = getAllDto;
     const queryBuilder = this.teacherRepository
       .createQueryBuilder('teacher')
-      .where('teacher.status = :status', { status: GlobalStatus.ACTIVE });
 
     if (search) {
       queryBuilder.andWhere(
         '(teacher.appellative ILIKE :search OR teacher.specialty ILIKE :search OR teacher.academicDegree ILIKE :search)',
         { search: `%${search}%` }
       );
+    }
+
+    if (status) {
+      queryBuilder.andWhere('teacher.status = :status', { status });
+    }
+
+    if (teachingMode) {
+      queryBuilder.andWhere('teacher.teachingModes = :teachingMode', { teachingMode });
     }
 
     const skip = (page - 1) * limit;

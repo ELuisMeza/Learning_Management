@@ -7,6 +7,7 @@ import { CareersService } from '../careers/careers.service';
 import { GlobalStatus } from 'src/globals/enums/global-status.enum';
 import { UpdateAcademicCycleDto } from './dto/update-cycles';
 import { BasePayloadGetDto } from 'src/globals/dto/base-payload-get.dto';
+import { GetCyclesDto } from './dto/get-cycles.dto';
 
 @Injectable()
 export class AcademicCyclesService {
@@ -55,19 +56,26 @@ export class AcademicCyclesService {
     return academicCycle;
   }
 
-  async getAll(getAllDto: BasePayloadGetDto) {
-    const { page = 1, limit = 10, search } = getAllDto;
+  async getAll(getAllDto: GetCyclesDto) {
+    const { page = 1, limit = 10, search, status, careerId } = getAllDto;
     const queryBuilder = this.academicCycleRepository
       .createQueryBuilder('cycle')
       .addSelect('career.name', 'careerName')
       .leftJoin('cycle.career', 'career')
-      .where('cycle.status = :status', { status: GlobalStatus.ACTIVE });
 
     if (search) {
       queryBuilder.andWhere(
         '(cycle.name ILIKE :search OR cycle.code ILIKE :search OR cycle.description ILIKE :search)',
         { search: `%${search}%` }
       );
+    }
+
+    if (status) {
+      queryBuilder.andWhere('cycle.status = :status', { status });
+    }
+
+    if (careerId) {
+      queryBuilder.andWhere('cycle.careerId = :careerId', { careerId });
     }
 
     const skip = (page - 1) * limit;

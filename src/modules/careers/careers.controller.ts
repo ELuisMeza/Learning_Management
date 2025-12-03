@@ -17,6 +17,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateCareerDto } from './dto/create-career.dto';
 import { UpdateCareerDto } from './dto/update-career.dto';
 import { BasePayloadGetDto } from 'src/globals/dto/base-payload-get.dto';
+import { GetCareerDto } from './dto/get-carrer';
 
 @ApiTags('careers')
 @ApiBearerAuth()
@@ -28,9 +29,9 @@ export class CareersController {
   @Post('get-all')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Listar carreras con paginación y búsqueda' })
-  @ApiBody({ type: BasePayloadGetDto })
+  @ApiBody({ type: GetCareerDto })
   @ApiOkResponse({ description: 'Listado paginado de carreras' })
-  getAll(@Body() getAllDto: BasePayloadGetDto) {
+  getAll(@Body() getAllDto: GetCareerDto) {
     return this.careersService.findAll(getAllDto);
   }
 

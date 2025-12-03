@@ -18,6 +18,7 @@ import { CreateAcademicModuleDto } from './dto/create-module.dto';
 import { AcademicModule } from './academic-modules.entity';
 import { UpdateAcademicModuleDto } from './dto/update-module.dto';
 import { BasePayloadGetDto } from 'src/globals/dto/base-payload-get.dto';
+import { GetModulesDto } from './dto/get-modules.dto';
 
 @ApiTags('academic-modules')
 @ApiBearerAuth()
@@ -30,9 +31,9 @@ export class AcademicModulesController {
   @Post('get-all')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Listar todos los módulos académicos con paginación y búsqueda' })
-  @ApiBody({ type: BasePayloadGetDto })
+  @ApiBody({ type: GetModulesDto })
   @ApiOkResponse({ description: 'Listado paginado de módulos académicos' })
-  getAll(@Body() getAllDto: BasePayloadGetDto) {
+  getAll(@Body() getAllDto: GetModulesDto) {
     return this.academicModulesService.getAll(getAllDto);
   }
 

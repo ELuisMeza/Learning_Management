@@ -21,6 +21,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { EmailsService } from '../emails/emails.service';
 import { CreateUpdateTeacherDto } from '../teachers/dto/create-teacher.dto';
 import { BasePayloadGetDto } from 'src/globals/dto/base-payload-get.dto';
+import { GetUsersDto } from './dto/get-users';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -35,9 +36,9 @@ export class UsersController {
   @Post('get-all')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Listar todos los usuarios' })
-  @ApiBody({ type: BasePayloadGetDto })
+  @ApiBody({ type: GetUsersDto })
   @ApiOkResponse({ description: 'Listado de usuarios' })
-  async getAll(@Body() getAllDto: BasePayloadGetDto) {
+  async getAll(@Body() getAllDto: GetUsersDto) {
     return this.usersService.getAll(getAllDto);
   }
 

@@ -10,6 +10,7 @@ import { UpdateClassDto } from './dto/update-class.dto';
 import { UsersService } from '../users/users.service';
 import * as QRCode from 'qrcode';
 import { BasePayloadGetDto } from 'src/globals/dto/base-payload-get.dto';
+import { GetClassesDto } from './dto/get-clasees.dto';
 
 @Injectable()
 export class ClassesService {
@@ -165,20 +166,35 @@ export class ClassesService {
   };
  }
 
-  async getAll(getAllDto: BasePayloadGetDto): Promise<{ data: Class[], pagination: { page: number, limit: number, total: number, totalPages: number } }> {
-    const { page = 1, limit = 10, search } = getAllDto;
+  async getAll(getAllDto: GetClassesDto): Promise<{ data: Class[], pagination: { page: number, limit: number, total: number, totalPages: number } }> {
+    const { page = 1, limit = 10, search, status, moduleId, teacherId, typeTeaching } = getAllDto;
     const queryBuilder = this.classRepository.createQueryBuilder('class')
       .leftJoin('class.module', 'module')
       .leftJoin('class.teacher', 'teacher')
       .addSelect('teacher.appellative', 'appellative')
       .addSelect('module.name', 'moduleName')
-      .where('class.status = :status', { status: GlobalStatus.ACTIVE });
 
     if (search) {
       queryBuilder.andWhere(
         '(class.name ILIKE :search OR class.code ILIKE :search OR class.description ILIKE :search)',
         { search: `%${search}%` }
       );
+    }
+
+    if (status) {
+      queryBuilder.andWhere('class.status = :status', { status });
+    }
+
+    if (moduleId) {
+      queryBuilder.andWhere('class.moduleId = :moduleId', { moduleId });
+    }
+
+    if (teacherId) {
+      queryBuilder.andWhere('class.teacherId = :teacherId', { teacherId });
+    }
+
+    if (typeTeaching) {
+      queryBuilder.andWhere('class.typeTeaching = :typeTeaching', { typeTeaching });
     }
 
     const skip = (page - 1) * limit;

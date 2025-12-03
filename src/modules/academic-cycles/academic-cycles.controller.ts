@@ -17,6 +17,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateAcademicCycleDto } from './dto/create-cycles.dto';
 import { UpdateAcademicCycleDto } from './dto/update-cycles';
 import { BasePayloadGetDto } from 'src/globals/dto/base-payload-get.dto';
+import { GetCyclesDto } from './dto/get-cycles.dto';
 
 @ApiTags('academic-cycles')
 @ApiBearerAuth()
@@ -28,9 +29,9 @@ export class AcademicCyclesController {
   @Post('get-all')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Listar todos los ciclos académicos con paginación y búsqueda' })
-  @ApiBody({ type: BasePayloadGetDto })
+  @ApiBody({ type: GetCyclesDto })
   @ApiOkResponse({ description: 'Listado paginado de ciclos académicos' })
-  getAll(@Body() getAllDto: BasePayloadGetDto) {
+  getAll(@Body() getAllDto: GetCyclesDto) {
     return this.academicCyclesService.getAll(getAllDto);
   }
 

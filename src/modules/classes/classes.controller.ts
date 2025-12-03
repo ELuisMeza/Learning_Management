@@ -20,6 +20,7 @@ import { UpdateClassDto } from './dto/update-class.dto';
 import type { RequestWithUser } from 'src/globals/types/request-with-user.type';
 import { ClassStudentsService } from '../class-students/class-students.service';
 import { BasePayloadGetDto } from 'src/globals/dto/base-payload-get.dto';
+import { GetClassesDto } from './dto/get-clasees.dto';
 
 @ApiTags('classes')
 @ApiBearerAuth()
@@ -34,9 +35,9 @@ export class ClassesController {
   @Post('get-all')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Listar todas las clases con paginación y búsqueda' })
-  @ApiBody({ type: BasePayloadGetDto })
+  @ApiBody({ type: GetClassesDto })
   @ApiOkResponse({ description: 'Listado paginado de clases' })
-  getAll(@Body() getAllDto: BasePayloadGetDto) {
+  getAll(@Body() getAllDto: GetClassesDto) {
     return this.classesService.getAll(getAllDto);
   }
 

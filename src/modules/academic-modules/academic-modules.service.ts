@@ -7,6 +7,7 @@ import { UpdateAcademicModuleDto } from './dto/update-module.dto';
 import { GlobalStatus } from 'src/globals/enums/global-status.enum';
 import { AcademicCyclesService } from '../academic-cycles/academic-cycles.service';
 import { BasePayloadGetDto } from 'src/globals/dto/base-payload-get.dto';
+import { GetModulesDto } from './dto/get-modules.dto';
 
 @Injectable()
 export class AcademicModulesService {
@@ -51,19 +52,26 @@ export class AcademicModulesService {
     return academicModules;
   }
 
-  async getAll(getAllDto: BasePayloadGetDto): Promise<{ data: AcademicModule[], pagination: { page: number, limit: number, total: number, totalPages: number } }> {
-    const { page = 1, limit = 10, search } = getAllDto;
+  async getAll(getAllDto: GetModulesDto): Promise<{ data: AcademicModule[], pagination: { page: number, limit: number, total: number, totalPages: number } }> {
+    const { page = 1, limit = 10, search, status, cycleId } = getAllDto;
     const queryBuilder = this.academicModuleRepository
       .createQueryBuilder('module')
       .addSelect('cycle.name', 'cycleName')
       .leftJoin('module.cycle', 'cycle')
-      .where('module.status = :status', { status: GlobalStatus.ACTIVE });
 
     if (search) {
       queryBuilder.andWhere(
         '(module.name ILIKE :search OR module.code ILIKE :search OR module.description ILIKE :search)',
         { search: `%${search}%` }
       );
+    }
+
+    if (status) {
+      queryBuilder.andWhere('module.status = :status', { status });
+    }
+
+    if (cycleId) {
+      queryBuilder.andWhere('module.cycleId = :cycleId', { cycleId });
     }
 
     const skip = (page - 1) * limit;

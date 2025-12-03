@@ -55,7 +55,8 @@ export class CreateUserDto extends UpdateUserDto {
     description: 'ID del rol asignado al usuario',
   })
   @IsUUID()
-  roleId: string;
+  @IsOptional()
+  roleId?: string;
 
   @ApiProperty({
     example: 'f5f8b4f0-3f07-4c0f-8a0a-4b4a5b7a9a1c',

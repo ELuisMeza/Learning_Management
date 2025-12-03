@@ -1,4 +1,11 @@
-import { BadRequestException, Injectable, Inject, forwardRef, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Inject,
+  forwardRef,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DateTime } from 'luxon';
@@ -14,6 +21,7 @@ import { CreateUpdateTeacherDto } from '../teachers/dto/create-teacher.dto';
 import { TeachingModes } from 'src/globals/enums/teaching-modes.enum';
 import { Teacher } from '../teachers/teachers.entity';
 import { BasePayloadGetDto } from 'src/globals/dto/base-payload-get.dto';
+import { GetUsersDto } from './dto/get-users';
 
 @Injectable()
 export class UsersService {
@@ -26,27 +34,33 @@ export class UsersService {
     private readonly authService: AuthService,
   ) {}
 
-  async create(createUserDto: CreateUserDto, userCreatorId: string): Promise<User> {
-
-    if(await this.existsNumberDocument(createUserDto.documentNumber!)){
+  async create(
+    createUserDto: CreateUserDto,
+    userCreatorId: string,
+  ): Promise<User> {
+    if (await this.existsNumberDocument(createUserDto.documentNumber!)) {
       throw new ConflictException('El número de documento ya está registrado');
     }
 
-    if(await this.findByEmail(createUserDto.email) !== null){
+    if ((await this.findByEmail(createUserDto.email)) !== null) {
       throw new ConflictException('El email ya está registrado');
     }
 
+    const { ...userData } = createUserDto;
 
-    const {...userData } = createUserDto;
+    const password = await this.authService.hashPassword(
+      createUserDto.password,
+    );
 
-    const password = await this.authService.hashPassword(createUserDto.password);
-    
+    const role = await this.rolesService.getByName('Estudiante');
+
     const payloadUser: Partial<User> = {
       ...userData,
       birthdate: DateTime.fromISO(createUserDto.birthdate).toJSDate(),
       status: GlobalStatus.ACTIVE,
       createdBy: userCreatorId,
       password: password,
+      roleId: role.id,
     };
 
     return await this.userRepository.save(payloadUser);
@@ -67,7 +81,10 @@ export class UsersService {
   }
 
   async getByIdAndActive(id: string): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { id }, relations: ['role', 'teacher'] });
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ['role', 'teacher'],
+    });
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
@@ -75,7 +92,6 @@ export class UsersService {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
-
     const user = await this.getByIdAndActive(id);
 
     Object.assign(user, updateUserDto);
@@ -93,20 +109,20 @@ export class UsersService {
 
   async findGoogleUser(googleProfile: any): Promise<User> {
     const { email } = googleProfile;
-    
+
     // Buscar si el usuario ya existe por email
     let user = await this.findByEmail(email);
 
     if (!user) {
       throw new NotFoundException('Usuario no encontrado');
     }
-    
+
     return user;
   }
 
   async getStadisticsStudents() {
     const totalActiveStudents = await this.userRepository.count({
-      where: { role: { name: 'Estudiante' }, status: GlobalStatus.ACTIVE }
+      where: { role: { name: 'Estudiante' }, status: GlobalStatus.ACTIVE },
     });
 
     return {
@@ -114,26 +130,53 @@ export class UsersService {
     };
   }
 
-  async createTeacher(createTeacherDto: CreateUpdateTeacherDto, userCreatorId: string): Promise<User> {
-
-    if(await this.existsNumberDocument(createTeacherDto.documentNumber!)){
+  async createTeacher(
+    createTeacherDto: CreateUpdateTeacherDto,
+    userCreatorId: string,
+  ): Promise<User> {
+    if (await this.existsNumberDocument(createTeacherDto.documentNumber!)) {
       throw new ConflictException('El número de documento ya está registrado');
     }
 
-    if(await this.findByEmail(createTeacherDto.email) !== null){
+    if ((await this.findByEmail(createTeacherDto.email)) !== null) {
       throw new ConflictException('El email ya está registrado');
     }
 
     const teacher = await this.teachersService.create(createTeacherDto);
-    const user = await this.create({ ...createTeacherDto, teacherId: teacher.id }, userCreatorId);
+    const role = await this.rolesService.getByName('Docente');
+    const user = await this.create(
+      { ...createTeacherDto, teacherId: teacher.id, roleId: role.id },
+      userCreatorId,
+    );
     return user;
   }
 
-  async   getAll(getAllDto: BasePayloadGetDto): Promise<{ data: User[], pagination: { page: number, limit: number, total: number, totalPages: number } }> {
-    const { page = 1, limit = 10, search } = getAllDto;
-    const queryBuilder = this.userRepository.createQueryBuilder('user').where('user.status = :status', { status: GlobalStatus.ACTIVE }).andWhere('user.teacherId IS NULL');
+  async getAll(
+    getAllDto: GetUsersDto,
+  ): Promise<{
+    data: User[];
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    };
+  }> {
+    const { page = 1, limit = 10, search, status } = getAllDto;
+    const role = await this.rolesService.getByName('Estudiante');
+    const queryBuilder = this.userRepository
+      .createQueryBuilder('user')
+      .where('user.roleId = :roleId', { roleId: role.id })
+      .andWhere('user.teacherId IS NULL');
+
     if (search) {
-      queryBuilder.andWhere('user.name ILIKE :search OR user.email ILIKE :search', { search: `%${search}%` });
+      queryBuilder.andWhere(
+        'user.name ILIKE :search OR user.email ILIKE :search',
+        { search: `%${search}%` },
+      );
+    }
+    if (status) {
+      queryBuilder.andWhere('user.status = :status', { status });
     }
     const [data, total] = await queryBuilder.getManyAndCount();
     return {
@@ -142,7 +185,7 @@ export class UsersService {
         page,
         limit,
         total: total as number,
-        totalPages: Math.ceil(total as number / limit),
+        totalPages: Math.ceil((total as number) / limit),
       },
     };
   }

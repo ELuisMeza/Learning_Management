@@ -7,6 +7,7 @@ import { GlobalStatus } from 'src/globals/enums/global-status.enum';
 import { TeachingModes } from 'src/globals/enums/teaching-modes.enum';
 import { UpdateCareerDto } from './dto/update-career.dto';
 import { BasePayloadGetDto } from 'src/globals/dto/base-payload-get.dto';
+import { GetCareerDto } from './dto/get-carrer';
 
 @Injectable()
 export class CareersService {
@@ -20,10 +21,18 @@ export class CareersService {
     return await this.careerRepository.save(career);
   }
 
-  async findAll(getAllDto: BasePayloadGetDto): Promise<{ data: Career[], pagination: { page: number, limit: number, total: number, totalPages: number } }> {
-    const { page = 1, limit = 10, search } = getAllDto;
+  async findAll(getAllDto: GetCareerDto): Promise<{ data: Career[], pagination: { page: number, limit: number, total: number, totalPages: number } }> {
+    const { page = 1, limit = 10, search, modality, status } = getAllDto;
     const queryBuilder = this.careerRepository
       .createQueryBuilder('career')
+
+    if (modality) {
+      queryBuilder.andWhere('career.modality = :modality', { modality });
+    }
+
+    if (status) {
+      queryBuilder.andWhere('career.status = :status', { status });
+    }
 
     if (search) {
       queryBuilder.andWhere(
