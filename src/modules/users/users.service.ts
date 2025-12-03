@@ -12,6 +12,8 @@ import { AuthService } from '../auth/auth.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUpdateTeacherDto } from '../teachers/dto/create-teacher.dto';
 import { TeachingModes } from 'src/globals/enums/teaching-modes.enum';
+import { Teacher } from '../teachers/teachers.entity';
+import { BasePayloadGetDto } from 'src/globals/dto/base-payload-get.dto';
 
 @Injectable()
 export class UsersService {
@@ -34,30 +36,8 @@ export class UsersService {
       throw new ConflictException('El email ya está registrado');
     }
 
-    const role = await this.rolesService.getById(createUserDto.roleId);
-    let newTeacherId: string | undefined;
 
-    if(role.name === 'Docente'){
-
-      if(!createUserDto.teachingModes ){
-        throw new BadRequestException('El modo de enseñanza es requerido');
-    }
-
-      const payloadTeacher: CreateUpdateTeacherDto = {
-        appellative: createUserDto.name + ' ' + createUserDto.lastNameFather || '',
-        specialty: createUserDto.specialty || '',
-        academicDegree: createUserDto.academicDegree || '',
-        experienceYears: createUserDto.experienceYears || 0,
-        bio: createUserDto.bio || '',
-        cvUrl: createUserDto.cvUrl || '',
-        teachingModes: createUserDto.teachingModes,
-      };
-
-      const teacher = await this.teachersService.create(payloadTeacher);
-      newTeacherId = teacher.id;
-    }
-
-    const { specialty, academicDegree, experienceYears, bio, cvUrl, teachingModes, ...userData } = createUserDto;
+    const {...userData } = createUserDto;
 
     const password = await this.authService.hashPassword(createUserDto.password);
     
@@ -68,10 +48,6 @@ export class UsersService {
       createdBy: userCreatorId,
       password: password,
     };
-
-    if(newTeacherId){
-      payloadUser.teacherId = newTeacherId;
-    }
 
     return await this.userRepository.save(payloadUser);
   }
@@ -101,22 +77,6 @@ export class UsersService {
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
 
     const user = await this.getByIdAndActive(id);
-
-    if(user.role.name === 'Docente'){
-
-
-      const payloadTeacher: CreateUpdateTeacherDto = {
-        appellative: user.teacher.appellative || '',
-        specialty: updateUserDto.specialty || '',
-        academicDegree: updateUserDto.academicDegree || '',
-        experienceYears: updateUserDto.experienceYears || 0,
-        bio: updateUserDto.bio || '',
-        cvUrl: updateUserDto.cvUrl || '',
-        teachingModes: updateUserDto.teachingModes as TeachingModes || user.teacher.teachingModes,
-      };
-
-      await this.teachersService.update(user.teacher.id, payloadTeacher);
-    }
 
     Object.assign(user, updateUserDto);
     return await this.userRepository.save(user);
@@ -154,4 +114,36 @@ export class UsersService {
     };
   }
 
+  async createTeacher(createTeacherDto: CreateUpdateTeacherDto, userCreatorId: string): Promise<User> {
+
+    if(await this.existsNumberDocument(createTeacherDto.documentNumber!)){
+      throw new ConflictException('El número de documento ya está registrado');
+    }
+
+    if(await this.findByEmail(createTeacherDto.email) !== null){
+      throw new ConflictException('El email ya está registrado');
+    }
+
+    const teacher = await this.teachersService.create(createTeacherDto);
+    const user = await this.create({ ...createTeacherDto, teacherId: teacher.id }, userCreatorId);
+    return user;
+  }
+
+  async   getAll(getAllDto: BasePayloadGetDto): Promise<{ data: User[], pagination: { page: number, limit: number, total: number, totalPages: number } }> {
+    const { page = 1, limit = 10, search } = getAllDto;
+    const queryBuilder = this.userRepository.createQueryBuilder('user').where('user.status = :status', { status: GlobalStatus.ACTIVE }).andWhere('user.teacherId IS NULL');
+    if (search) {
+      queryBuilder.andWhere('user.name ILIKE :search OR user.email ILIKE :search', { search: `%${search}%` });
+    }
+    const [data, total] = await queryBuilder.getManyAndCount();
+    return {
+      data: data,
+      pagination: {
+        page,
+        limit,
+        total: total as number,
+        totalPages: Math.ceil(total as number / limit),
+      },
+    };
+  }
 }

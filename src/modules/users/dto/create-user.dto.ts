@@ -56,4 +56,12 @@ export class CreateUserDto extends UpdateUserDto {
   })
   @IsUUID()
   roleId: string;
+
+  @ApiProperty({
+    example: 'f5f8b4f0-3f07-4c0f-8a0a-4b4a5b7a9a1c',
+    description: 'ID del profesor asignado al usuario',
+  })
+  @IsUUID()
+  @IsOptional()
+  teacherId?: string;
 }
