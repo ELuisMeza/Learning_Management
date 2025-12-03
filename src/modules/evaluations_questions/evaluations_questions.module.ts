@@ -5,10 +5,12 @@ import { EvaluationsQuestionsController } from './evaluations_questions.controll
 import { EvaluationQuestion } from './evaluations_questions.entity';
 import { EvaluationQuestionOption } from '../evaluations_question_options/evaluations_question_options.entity';
 import { Evaluation } from '../evaluations/evaluations.entity';
+import { EvaluationsQuestionOptionsModule } from '../evaluations_question_options/evaluations_question_options.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([EvaluationQuestion, EvaluationQuestionOption, Evaluation]),
+    EvaluationsQuestionOptionsModule,
   ],
   controllers: [EvaluationsQuestionsController],
   providers: [EvaluationsQuestionsService],
