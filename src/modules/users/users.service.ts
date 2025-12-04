@@ -100,6 +100,12 @@ export class UsersService {
 
   async isStudent(id: string): Promise<User> {
     const user = await this.getByIdAndActive(id);
+    
+    // Validar que el usuario tenga un rol asignado
+    if (!user.role) {
+      throw new BadRequestException('El usuario no tiene un rol asignado');
+    }
+    
     const isStudent = user.role.name === 'Estudiante';
     if (!isStudent) {
       throw new BadRequestException('El usuario no es un estudiante');

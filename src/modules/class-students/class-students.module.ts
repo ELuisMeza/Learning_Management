@@ -4,12 +4,13 @@ import { JwtModule } from '@nestjs/jwt';
 import { ClassStudentsService } from './class-students.service';
 import { ClassStudentsController } from './class-students.controller';
 import { ClassStudent } from './class-students.entity';
+import { User } from '../users/users.entity';
 import { ClassesModule } from '../classes/classes.module';
 import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ClassStudent]), 
+    TypeOrmModule.forFeature([ClassStudent, User]), 
     forwardRef(() => ClassesModule), 
     UsersModule,
     JwtModule.register({
