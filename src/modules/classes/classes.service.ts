@@ -11,6 +11,7 @@ import { UsersService } from '../users/users.service';
 import * as QRCode from 'qrcode';
 import { BasePayloadGetDto } from 'src/globals/dto/base-payload-get.dto';
 import { GetClassesByTeacherIdDto, GetClassesDto } from './dto/get-clasees.dto';
+import { transformGetWithDetails } from './utils/transformGetWIthDetails';
 
 @Injectable()
 export class ClassesService {
@@ -64,13 +65,46 @@ export class ClassesService {
     }
   }
 
-  async getByIdAndActive(id: string): Promise<Class> {
-    const classRegister = await this.classRepository.findOne({
-      where: { id, status: GlobalStatus.ACTIVE },
-      relations: ['module', 'teacher'],
-    });
+  async getByWithDetails(id: string) {
+    const classRegister = await this.classRepository.createQueryBuilder('c')
+    .select([
+      'c.id as id',
+      'c.name as name',
+      'c.description as description',
+      'c.credits as credits',
+      'c.code as code',
+      'c.typeTeaching as "typeTeaching"',
+      'c.maxStudents as "maxStudents"',
+      'c.createdAt as "createdAt"',
+      'am.name as "moduleName"',
+      'am.code as "moduleCode"',
+      'ac.name as "cycleName"',
+      'ac.code as "cycleCode"',
+      'cr.name as "careerName"',
+      'cr.code as "careerCode"',
+      't.appellative as "teacherAppellative"',
+      'e.name as "evaluationName"',
+      'e.description as "evaluationDescription"',
+      'e.evaluationMode as "evaluationMode"',
+    ])
+    .leftJoin('academic_modules', 'am', 'am.id = c.module_id')
+    .leftJoin('academic_cycles', 'ac', 'ac.id = am.cycle_id')
+    .leftJoin('careers', 'cr', 'cr.id = ac.career_id')
+    .leftJoin('teachers', 't', 't.id = c.teacher_id')
+    .leftJoin('evaluations', 'e', 'e.class_id = c.id')
+    .where('c.id = :id', { id })
+    .andWhere('c.status = :status', { status: GlobalStatus.ACTIVE })
+    .getRawMany();
     if (!classRegister) {
       throw new NotFoundException(`Clase con ID ${id} no encontrada`);
+    }
+    return transformGetWithDetails(classRegister);
+  }
+
+  async getByIdAndActive(id: string): Promise<Class> {
+    const classRegister = await this.classRepository.findOne({ where: { id, status: GlobalStatus.ACTIVE } });
+    if (!classRegister) {
+      throw new NotFoundException(`Clase con ID ${id} no encontrada o no active`);
     }
     return classRegister;
   }
@@ -106,7 +140,7 @@ export class ClassesService {
     if (!user.teacherId) {
       throw new BadRequestException('El usuario no es un docente');
     }
-    const { moduleId, cycleId, careerId, typeTeaching, page = 1, limit = 10 } = getAllByTeacherIdDto;
+    const { moduleId, cycleId, carrerId, typeTeaching, page = 1, limit = 10 } = getAllByTeacherIdDto;
     const skip = (page - 1) * limit;
     const queryBuilder = this.classRepository.createQueryBuilder('class')
       .select([
@@ -138,8 +172,8 @@ export class ClassesService {
     if (cycleId) {
       queryBuilder.andWhere('am.cycleId = :cycleId', { cycleId });
     }
-    if (careerId) {
-      queryBuilder.andWhere('ac.careerId = :careerId', { careerId });
+    if (carrerId) {
+      queryBuilder.andWhere('ac.careerId = :careerId', { careerId: carrerId });
     }
     if (typeTeaching) {
       queryBuilder.andWhere('class.typeTeaching = :typeTeaching', { typeTeaching });

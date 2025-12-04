@@ -271,4 +271,13 @@ export class ClassStudentsController {
       return res.status(HttpStatus.BAD_REQUEST).send(html);
     }
   }
+
+  @Get('by-class/:classId')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Obtener estudiantes de una clase' })
+  @ApiOkResponse({ description: 'Listado de estudiantes' })
+  @ApiParam({ name: 'id', description: 'ID de la clase' })
+  async getClassStudents(@Param('classId') classId: string) {
+    return await this.classStudentsService.getStudentsByClassId(classId);
+  }
 }

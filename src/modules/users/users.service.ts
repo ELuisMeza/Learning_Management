@@ -22,6 +22,7 @@ import { TeachingModes } from 'src/globals/enums/teaching-modes.enum';
 import { Teacher } from '../teachers/teachers.entity';
 import { BasePayloadGetDto } from 'src/globals/dto/base-payload-get.dto';
 import { GetUsersDto } from './dto/get-users';
+import { Role } from '../roles/roles.entity';
 
 @Injectable()
 export class UsersService {
@@ -51,8 +52,14 @@ export class UsersService {
     const password = await this.authService.hashPassword(
       createUserDto.password,
     );
-
-    const role = await this.rolesService.getByName('Estudiante');
+    
+    let role: Role;
+    if (!createUserDto.roleId) {
+      role = await this.rolesService.getByName('Estudiante');
+      createUserDto.roleId = role.id;
+    } else {
+      role = await this.rolesService.getById(createUserDto.roleId);
+    }
 
     const payloadUser: Partial<User> = {
       ...userData,
@@ -144,6 +151,7 @@ export class UsersService {
 
     const teacher = await this.teachersService.create(createTeacherDto);
     const role = await this.rolesService.getByName('Docente');
+    console.log(role);
     const user = await this.create(
       { ...createTeacherDto, teacherId: teacher.id, roleId: role.id },
       userCreatorId,

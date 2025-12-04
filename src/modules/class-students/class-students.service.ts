@@ -101,7 +101,7 @@ export class ClassStudentsService {
     
     return await this.classStudentRepository.find({
       where: { classId },
-      relations: ['student', 'student.role'],
+      relations: ['student'],
       order: { enrollmentDate: 'DESC' },
     });
   }

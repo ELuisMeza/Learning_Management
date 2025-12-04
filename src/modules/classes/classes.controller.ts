@@ -76,15 +76,7 @@ export class ClassesController {
   async getQRCode(@Param('id') id: string) {
     return await this.classesService.generateQRCode(id);
   }
-  
-  @Get(':id/students')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Obtener estudiantes de una clase' })
-  @ApiOkResponse({ description: 'Listado de estudiantes' })
-  @ApiParam({ name: 'id', description: 'ID de la clase' })
-  async getClassStudents(@Param('id') classId: string) {
-    return await this.classStudentsService.getStudentsByClassId(classId);
-  }
+
   
   @Post(':id/enroll')
   @HttpCode(HttpStatus.CREATED)
@@ -101,7 +93,7 @@ export class ClassesController {
   @ApiOkResponse({ description: 'Clase encontrada' })
   @ApiParam({ name: 'id', description: 'ID de la clase' })
   async getById(@Param('id') id: string) {
-    return await this.classesService.getByIdAndActive(id);
+    return await this.classesService.getByWithDetails(id);
   }
   
   @Put(':id')
