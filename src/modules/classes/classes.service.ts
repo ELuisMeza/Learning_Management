@@ -10,7 +10,7 @@ import { UpdateClassDto } from './dto/update-class.dto';
 import { UsersService } from '../users/users.service';
 import * as QRCode from 'qrcode';
 import { BasePayloadGetDto } from 'src/globals/dto/base-payload-get.dto';
-import { GetClassesDto } from './dto/get-clasees.dto';
+import { GetClassesByTeacherIdDto, GetClassesDto } from './dto/get-clasees.dto';
 
 @Injectable()
 export class ClassesService {
@@ -101,17 +101,62 @@ export class ClassesService {
   /**
    * Obtiene todas las clases de un docente
    */
-  async getAllByTeacherId(teacherId: string): Promise<Class[]> {
-    const user = await this.usersService.getByIdAndActive(teacherId);
+  async getAllByTeacherId(getAllByTeacherIdDto: GetClassesByTeacherIdDto, userId: string): Promise<{ data: any[], pagination: { page: number, limit: number, total: number, totalPages: number } }> {
+    const user = await this.usersService.getByIdAndActive(userId);
     if (!user.teacherId) {
       throw new BadRequestException('El usuario no es un docente');
     }
-    
-    return await this.classRepository.find({
-      where: { teacherId: user.teacherId, status: GlobalStatus.ACTIVE },
-      relations: ['module', 'teacher'],
-      order: { createdAt: 'DESC' },
-    });
+    const { moduleId, cycleId, careerId, typeTeaching, page = 1, limit = 10 } = getAllByTeacherIdDto;
+    const skip = (page - 1) * limit;
+    const queryBuilder = this.classRepository.createQueryBuilder('class')
+      .select([
+        'class.id as id',
+        'class.name as name',
+        'class.description as description',
+        'class.credits as credits',
+        'class.typeTeaching as typeTeaching',
+        'class.maxStudents as maxStudents',
+        'class.createdAt as createdAt',
+        'am.name as moduleName',
+        'am.code as moduleCode',
+        'ac.id as cycleId',
+        'ac.name as cycleName',
+        'ac.code as cycleCode',
+        'c.id as careerId',
+        'c.name as careerName',
+        'c.code as careerCode',
+      ])
+      .leftJoin('academic_modules', 'am', 'am.id = class.moduleId')
+      .leftJoin('academic_cycles', 'ac', 'ac.id = am.cycleId')
+      .leftJoin('careers', 'c', 'c.id = ac.careerId')
+      .leftJoin('teachers', 't', 't.id = class.teacherId')
+      .where('class.teacherId = :teacherId', { teacherId: user.teacherId });
+      
+    if (moduleId) {
+      queryBuilder.andWhere('class.moduleId = :moduleId', { moduleId });
+    }
+    if (cycleId) {
+      queryBuilder.andWhere('am.cycleId = :cycleId', { cycleId });
+    }
+    if (careerId) {
+      queryBuilder.andWhere('ac.careerId = :careerId', { careerId });
+    }
+    if (typeTeaching) {
+      queryBuilder.andWhere('class.typeTeaching = :typeTeaching', { typeTeaching });
+    }
+
+    const total = await queryBuilder.getCount();
+    const data = await queryBuilder.skip(skip).take(limit).getRawMany();
+
+    return {
+      data,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 
   /**

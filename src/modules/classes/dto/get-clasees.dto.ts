@@ -25,3 +25,26 @@ export class GetClassesDto extends BasePayloadGetDto {
   @IsOptional()
   typeTeaching?: TeachingModes;
 }
+
+export class GetClassesByTeacherIdDto extends BasePayloadGetDto {
+
+  @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000', description: 'ID del módulo académico' })
+  @IsUUID()
+  @IsOptional()
+  moduleId?: string;
+
+  @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000', description: 'ID del ciclo académico' })
+  @IsUUID()
+  @IsOptional()
+  cycleId?: string;
+
+  @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000', description: 'ID de la carrera' })
+  @IsUUID()
+  @IsOptional()
+  careerId?: string;
+
+  @ApiProperty({ enum: TeachingModes, example: TeachingModes.IN_PERSON, description: 'Modalidad de la clase' })
+  @IsEnum(TeachingModes)
+  @IsOptional()
+  typeTeaching?: TeachingModes;
+}
