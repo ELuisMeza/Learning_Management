@@ -41,10 +41,10 @@ export class ClassStudent {
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
   updatedAt: Date;
 
-  @Column({ name: 'user_modified', type: 'uuid', nullable: true })
+  @Column({ name: 'user_modified_id', type: 'uuid', nullable: true })
   userModifiedId: string;
 
   @ManyToOne(() => User, { onDelete: 'SET NULL' })
-  @JoinColumn({ name: 'user_modified' })
+  @JoinColumn({ name: 'user_modified_id' })
   userModified: User;
 }
