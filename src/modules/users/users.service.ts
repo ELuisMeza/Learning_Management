@@ -203,4 +203,12 @@ export class UsersService {
       },
     };
   }
+
+  async getTeacherById(userId: string): Promise<Teacher> {
+    const user = await this.getByIdAndActive(userId);
+    if (!user.teacherId) {
+      throw new BadRequestException('El usuario no es un docente');
+    }
+    return this.teachersService.getById(user.teacherId);
+  }
 }

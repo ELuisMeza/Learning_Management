@@ -6,9 +6,10 @@ import { Evaluation } from './evaluations.entity';
 import { ClassesModule } from '../classes/classes.module';
 import { EvaluationTypesModule } from '../evaluation-types/evaluation-types.module';
 import { RubricsModule } from '../rubrics/rubrics.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Evaluation]), ClassesModule, EvaluationTypesModule, RubricsModule],
+  imports: [TypeOrmModule.forFeature([Evaluation]), ClassesModule, EvaluationTypesModule, RubricsModule, UsersModule],
   providers: [EvaluationsService],
   controllers: [EvaluationsController],
   exports: [EvaluationsService],

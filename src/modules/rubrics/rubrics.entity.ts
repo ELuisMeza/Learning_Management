@@ -7,20 +7,12 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Teacher } from '../teachers/teachers.entity';
 import { User } from '../users/users.entity';
 
 @Entity('rubrics')
 export class Rubric {
   @PrimaryGeneratedColumn('uuid')
   id: string;
-
-  @Column({ name: 'teacher_id', type: 'uuid' })
-  teacherId: string;
-
-  @ManyToOne(() => Teacher, { onDelete: 'SET NULL' })
-  @JoinColumn({ name: 'teacher_id' })
-  teacher: Teacher;
 
   @Column({ type: 'varchar', length: 150 })
   name: string;

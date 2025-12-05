@@ -30,9 +30,6 @@ export class RubricCriterion {
   @Column({ type: 'decimal', precision: 5, scale: 2, default: 1.0 })
   weight: number;
 
-  @Column({ name: 'order_number', type: 'int', default: 1 })
-  orderNumber: number;
-
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;
 
