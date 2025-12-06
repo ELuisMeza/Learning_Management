@@ -4,46 +4,16 @@ export class AddEvaluationQuestionsAndAnswers1764816068998 implements MigrationI
   name = 'AddEvaluationQuestionsAndAnswers1764816068998';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // 1. Corregir columna user_modified en class_students
-    // La migración original tiene user_modified_id pero la entidad usa user_modified
-    const classStudentsTable = await queryRunner.getTable('class_students');
-    if (classStudentsTable) {
-      const userModifiedIdColumn = classStudentsTable.findColumnByName('user_modified_id');
-      const userModifiedColumn = classStudentsTable.findColumnByName('user_modified');
-      
-      if (userModifiedIdColumn && !userModifiedColumn) {
-        await queryRunner.query(`
-          ALTER TABLE class_students 
-          RENAME COLUMN user_modified_id TO user_modified;
-        `);
-      }
-    }
-
-    // 2. Corregir teacher_id en rubrics para que sea NOT NULL (según la entidad)
-    // Nota: Si ya hay datos con teacher_id NULL, esto podría fallar
-    // En ese caso, primero actualiza los registros NULL o haz la columna nullable en la entidad
+    // 1. Eliminar teacher_id de rubrics si existe (la entidad no lo tiene)
     const rubricsTable = await queryRunner.getTable('rubrics');
     if (rubricsTable) {
       const teacherIdColumn = rubricsTable.findColumnByName('teacher_id');
-      if (teacherIdColumn && teacherIdColumn.isNullable) {
-        // Verificar si hay registros con teacher_id NULL
-        const result = await queryRunner.query(`
-          SELECT COUNT(*)::int as count 
-          FROM rubrics 
-          WHERE teacher_id IS NULL;
+      if (teacherIdColumn) {
+        // Eliminar la columna teacher_id si existe
+        await queryRunner.query(`
+          ALTER TABLE rubrics 
+          DROP COLUMN IF EXISTS teacher_id;
         `);
-        
-        const count = typeof result[0]?.count === 'number' 
-          ? result[0].count 
-          : parseInt(result[0]?.count || '0', 10);
-        
-        if (count === 0) {
-          await queryRunner.query(`
-            ALTER TABLE rubrics 
-            ALTER COLUMN teacher_id SET NOT NULL;
-          `);
-        }
-        // Si hay registros NULL, no se modifica la columna para evitar errores
       }
     }
 
@@ -116,28 +86,14 @@ export class AddEvaluationQuestionsAndAnswers1764816068998 implements MigrationI
     await queryRunner.query(`DROP TABLE IF EXISTS evaluations_question_options`);
     await queryRunner.query(`DROP TABLE IF EXISTS evaluations_questions`);
 
-    // Revertir cambios en rubrics
+    // Revertir cambios en rubrics (agregar teacher_id nullable si se eliminó)
     const rubricsTable = await queryRunner.getTable('rubrics');
     if (rubricsTable) {
       const teacherIdColumn = rubricsTable.findColumnByName('teacher_id');
-      if (teacherIdColumn && !teacherIdColumn.isNullable) {
+      if (!teacherIdColumn) {
         await queryRunner.query(`
           ALTER TABLE rubrics 
-          ALTER COLUMN teacher_id DROP NOT NULL;
-        `);
-      }
-    }
-
-    // Revertir cambios en class_students
-    const classStudentsTable = await queryRunner.getTable('class_students');
-    if (classStudentsTable) {
-      const userModifiedColumn = classStudentsTable.findColumnByName('user_modified');
-      const userModifiedIdColumn = classStudentsTable.findColumnByName('user_modified_id');
-      
-      if (userModifiedColumn && !userModifiedIdColumn) {
-        await queryRunner.query(`
-          ALTER TABLE class_students 
-          RENAME COLUMN user_modified TO user_modified_id;
+          ADD COLUMN teacher_id UUID REFERENCES teachers(id) ON DELETE SET NULL;
         `);
       }
     }

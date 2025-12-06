@@ -4,21 +4,32 @@ export class MakeRubricsTeacherIdNullable1735100000000 implements MigrationInter
   name = 'MakeRubricsTeacherIdNullable1735100000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // Hacer teacher_id nullable en la tabla rubrics
-    // Esto permite que usuarios que no son teachers puedan crear rúbricas
-    await queryRunner.query(`
-      ALTER TABLE rubrics 
-      ALTER COLUMN teacher_id DROP NOT NULL;
-    `);
+    // Eliminar teacher_id de rubrics si existe (la entidad actual no lo tiene)
+    // Esta migración se mantiene para compatibilidad con bases de datos que ya tenían teacher_id
+    const rubricsTable = await queryRunner.getTable('rubrics');
+    if (rubricsTable) {
+      const teacherIdColumn = rubricsTable.findColumnByName('teacher_id');
+      if (teacherIdColumn) {
+        await queryRunner.query(`
+          ALTER TABLE rubrics 
+          DROP COLUMN IF EXISTS teacher_id;
+        `);
+      }
+    }
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    // Revertir: hacer teacher_id NOT NULL nuevamente
-    // Primero actualizar cualquier NULL a un valor por defecto si es necesario
-    await queryRunner.query(`
-      ALTER TABLE rubrics 
-      ALTER COLUMN teacher_id SET NOT NULL;
-    `);
+    // Revertir: agregar teacher_id nullable nuevamente (solo si no existe)
+    const rubricsTable = await queryRunner.getTable('rubrics');
+    if (rubricsTable) {
+      const teacherIdColumn = rubricsTable.findColumnByName('teacher_id');
+      if (!teacherIdColumn) {
+        await queryRunner.query(`
+          ALTER TABLE rubrics 
+          ADD COLUMN teacher_id UUID REFERENCES teachers(id) ON DELETE SET NULL;
+        `);
+      }
+    }
   }
 }
 

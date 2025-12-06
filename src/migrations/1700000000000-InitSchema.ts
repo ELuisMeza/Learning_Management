@@ -161,7 +161,7 @@ export class InitSchema1700000000000 implements MigrationInterface {
         final_note DECIMAL(5,2) DEFAULT NULL,
         status enrollment_status DEFAULT 'in_course',
         updated_at TIMESTAMP DEFAULT NOW(),
-        user_modified_id UUID REFERENCES users(id) ON DELETE SET NULL,
+        user_modified UUID REFERENCES users(id) ON DELETE SET NULL,
         PRIMARY KEY (class_id, student_id)
       )
     `);
@@ -181,7 +181,6 @@ export class InitSchema1700000000000 implements MigrationInterface {
     await queryRunner.query(`
       CREATE TABLE rubrics (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        teacher_id UUID REFERENCES teachers(id) ON DELETE SET NULL,
         name VARCHAR(150) NOT NULL,
         description TEXT,
         user_creator UUID REFERENCES users(id) ON DELETE SET NULL,
@@ -260,6 +259,7 @@ export class InitSchema1700000000000 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE IF EXISTS rubrics`);
     await queryRunner.query(`DROP TABLE IF EXISTS evaluation_types`);
     await queryRunner.query(`DROP TABLE IF EXISTS class_students`);
+    await queryRunner.query(`DROP TABLE IF EXISTS class_schedules`);
     await queryRunner.query(`DROP TABLE IF EXISTS classes`);
     await queryRunner.query(`DROP TABLE IF EXISTS academic_modules`);
     await queryRunner.query(`DROP TABLE IF EXISTS academic_cycles`);
@@ -271,6 +271,7 @@ export class InitSchema1700000000000 implements MigrationInterface {
     // drop types
     await queryRunner.query(`DROP TYPE IF EXISTS evaluation_modes`);
     await queryRunner.query(`DROP TYPE IF EXISTS enrollment_status`);
+    await queryRunner.query(`DROP TYPE IF EXISTS day_of_week_enum`);
     await queryRunner.query(`DROP TYPE IF EXISTS teaching_modes`);
     await queryRunner.query(`DROP TYPE IF EXISTS gender_type`);
     await queryRunner.query(`DROP TYPE IF EXISTS global_status`);
