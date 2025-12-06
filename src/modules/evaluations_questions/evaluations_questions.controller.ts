@@ -2,10 +2,13 @@ import {
   Controller,
   Post,
   Body,
+  Get,
+  Param,
   HttpCode,
   HttpStatus,
+  ParseUUIDPipe,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { EvaluationsQuestionsService } from './evaluations_questions.service';
@@ -25,5 +28,13 @@ export class EvaluationsQuestionsController {
   @ApiCreatedResponse({ description: 'Formulario creado exitosamente' })
   async createForm(@Body() createFormDto: CreateFormDto) {
     return this.evaluationsQuestionsService.createForm(createFormDto);
+  }
+
+  @Get('evaluation/:evaluationId')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Obtener preguntas de una evaluación' })
+  @ApiParam({ name: 'evaluationId', type: String })
+  async getQuestionsByEvaluationId(@Param('evaluationId', ParseUUIDPipe) evaluationId: string) {
+    return this.evaluationsQuestionsService.getQuestionsByEvaluationId(evaluationId);
   }
 }

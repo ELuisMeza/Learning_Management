@@ -12,14 +12,24 @@ export class RubricLevelsService {
   ) {}
 
   async create(createRubricLevelDto: CreateRubricLevelDto, criterionId: string): Promise<RubricLevel> {
-
-    const payload: Partial<RubricLevel> = {
-      ...createRubricLevelDto,
-      criterionId: criterionId,
-    };
-    
-    const rubricLevel = this.rubricLevelRepository.create(payload);
-    return await this.rubricLevelRepository.save(rubricLevel);
+    try {
+      const payload: Partial<RubricLevel> = {
+        name: createRubricLevelDto.name,
+        description: createRubricLevelDto.description || undefined,
+        score: createRubricLevelDto.score,
+        criterionId: criterionId,
+      };
+      
+      const rubricLevel = this.rubricLevelRepository.create(payload);
+      return await this.rubricLevelRepository.save(rubricLevel);
+    } catch (error) {
+      console.error('=== ERROR AL CREAR NIVEL ===');
+      console.error('Error:', error);
+      console.error('DTO:', JSON.stringify(createRubricLevelDto, null, 2));
+      console.error('CriterionId:', criterionId);
+      console.error('============================');
+      throw error;
+    }
   }
 
 }

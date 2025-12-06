@@ -26,6 +26,7 @@ import { StadisticsModule } from './modules/stadistics/stadistics.module';
 import { EvaluationsQuestionsModule } from './modules/evaluations_questions/evaluations_questions.module';
 import { EvaluationAnswersModule } from './modules/evaluation_answers/evaluation_answers.module';
 import { EvaluationsQuestionOptionsModule } from './modules/evaluations_question_options/evaluations_question_options.module';
+import { GoogleSheetsModule } from './modules/google-sheets/google-sheets.module';
 
 @Module({
   imports: [
@@ -50,7 +51,8 @@ import { EvaluationsQuestionOptionsModule } from './modules/evaluations_question
     StadisticsModule,
     EvaluationsQuestionsModule,
     EvaluationAnswersModule,
-    EvaluationsQuestionOptionsModule
+    EvaluationsQuestionOptionsModule,
+    GoogleSheetsModule
   ],
   controllers: [AppController],
   providers: [AppService],

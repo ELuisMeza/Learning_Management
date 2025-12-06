@@ -9,9 +9,13 @@ import {
   HttpCode,
   HttpStatus,
   Req,
+  UseInterceptors,
+  UploadedFile,
+  BadRequestException,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { RubricsService } from './rubrics.service';
-import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiNoContentResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiCreatedResponse, ApiNoContentResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateRubricDto } from './dto/create.dto';
@@ -52,5 +56,38 @@ export class RubricsController {
     return this.rubricsService.create(createRubricDto, req.user.userId);
   }
 
+  @Post('upload-excel')
+  @HttpCode(HttpStatus.CREATED)
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiOperation({ summary: 'Subir rúbrica desde archivo Excel' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @ApiCreatedResponse({ description: 'Rúbrica creada desde Excel exitosamente' })
+  async uploadFromExcel(
+    @UploadedFile() file: { buffer: Buffer; originalname: string; mimetype?: string } | undefined,
+    @Req() req: RequestWithUser,
+  ) {
+    if (!file) {
+      throw new BadRequestException('No se proporcionó ningún archivo');
+    }
 
+    // Validar extensión del archivo
+    const validExtensions = ['.xlsx', '.xls'];
+    const fileExtension = file.originalname.substring(file.originalname.lastIndexOf('.')).toLowerCase();
+    if (!validExtensions.includes(fileExtension)) {
+      throw new BadRequestException('El archivo debe ser un Excel (.xlsx o .xls)');
+    }
+
+    return this.rubricsService.createFromExcel(file, req.user.userId);
+  }
 }

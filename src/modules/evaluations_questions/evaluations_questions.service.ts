@@ -62,4 +62,40 @@ export class EvaluationsQuestionsService {
       throw new BadRequestException(`Error al crear el formulario: ${error.message}`);
     }
   }
+
+  /**
+   * Obtener todas las preguntas de una evaluación con sus opciones
+   */
+  async getQuestionsByEvaluationId(evaluationId: string) {
+    // Verificar que la evaluación existe
+    const evaluation = await this.evaluationRepository.findOne({
+      where: { id: evaluationId },
+    });
+
+    if (!evaluation) {
+      throw new NotFoundException('Evaluación no encontrada');
+    }
+
+    // Obtener preguntas ordenadas
+    const questions = await this.questionRepository.find({
+      where: { evaluationId },
+      order: { orderIndex: 'ASC' },
+    });
+
+    // Para cada pregunta, obtener sus opciones
+    const questionsWithOptions = await Promise.all(
+      questions.map(async (question) => {
+        const options = await this.optionRepository.find({
+          where: { questionId: question.id },
+          order: { orderIndex: 'ASC' },
+        });
+        return {
+          ...question,
+          options,
+        };
+      })
+    );
+
+    return questionsWithOptions;
+  }
 }
