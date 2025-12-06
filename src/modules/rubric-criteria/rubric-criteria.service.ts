@@ -12,12 +12,23 @@ export class RubricCriteriaService {
   ) {}
 
   async create(createRubricCriterionDto: CreateRubricCriterionDto, rubricId: string): Promise<RubricCriterion> {
-    const payload: Partial<RubricCriterion> = {
-      ...createRubricCriterionDto,
-      rubricId: rubricId,
-    };
-    const rubricCriterion = this.rubricCriterionRepository.create(payload);
-    return await this.rubricCriterionRepository.save(rubricCriterion);
+    try {
+      const payload: Partial<RubricCriterion> = {
+        name: createRubricCriterionDto.name,
+        description: createRubricCriterionDto.description || undefined,
+        weight: createRubricCriterionDto.weight ?? 1.0,
+        rubricId: rubricId,
+      };
+      const rubricCriterion = this.rubricCriterionRepository.create(payload);
+      return await this.rubricCriterionRepository.save(rubricCriterion);
+    } catch (error) {
+      console.error('=== ERROR AL CREAR CRITERIO ===');
+      console.error('Error:', error);
+      console.error('DTO:', JSON.stringify(createRubricCriterionDto, null, 2));
+      console.error('RubricId:', rubricId);
+      console.error('================================');
+      throw error;
+    }
   }
 
 }
