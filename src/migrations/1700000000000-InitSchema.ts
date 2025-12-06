@@ -32,7 +32,7 @@ export class InitSchema1700000000000 implements MigrationInterface {
         experience_years INT DEFAULT 0,
         bio TEXT,
         cv_url VARCHAR(255),
-        teaching_modes teaching_modes DEFAULT 'hybrid',
+        teaching_modes VARCHAR(255) DEFAULT 'semipresencial',
         appellative VARCHAR(150) NOT NULL,
         status global_status DEFAULT 'active',
         created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -71,7 +71,7 @@ export class InitSchema1700000000000 implements MigrationInterface {
         name VARCHAR(150) NOT NULL,
         description TEXT,
         degree_title VARCHAR(150),
-        modality teaching_modes NOT NULL,
+        modality VARCHAR(255),
         duration_years INT CHECK (duration_years > 0),
         total_credits INT CHECK (total_credits >= 0),
         status global_status DEFAULT 'active',
@@ -178,6 +178,8 @@ export class InitSchema1700000000000 implements MigrationInterface {
     `);
 
     // 11.- rubrics
+    // NOTA: La relación tiene onDelete: 'SET NULL', por lo que la columna debe ser nullable
+    // La entidad debería tener nullable: true en user_creator para coincidir
     await queryRunner.query(`
       CREATE TABLE rubrics (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -230,7 +232,6 @@ export class InitSchema1700000000000 implements MigrationInterface {
         name VARCHAR(150) NOT NULL,
         description TEXT,
         weight DECIMAL(5,2) DEFAULT 1.0,
-        order_number INT DEFAULT 1,
         created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW()
       )
