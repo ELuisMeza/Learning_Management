@@ -1,32 +1,39 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import * as dotenv from 'dotenv';
-import * as path from 'path';
+import {
+  assertDatabaseEnvConfigured,
+  getAppDatabaseUrl,
+  hasDiscreteDbConfig,
+} from './database-env';
 
-dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+assertDatabaseEnvConfigured(false);
 
-// Validar que las variables de entorno requeridas estén definidas
-const requiredEnvVars = ['DB_HOST', 'DB_USERNAME', 'DB_PASSWORD', 'DB_NAME'];
-const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+const schema = process.env.DB_SCHEMA || 'public';
 
-if (missingVars.length > 0) {
-  throw new Error(`Variables de entorno faltantes: ${missingVars.join(', ')}`);
-}
-
-export const typeOrmConfig: TypeOrmModuleOptions = {
+const base: TypeOrmModuleOptions = {
   type: 'postgres',
-  host: process.env.DB_HOST!,
-  port: parseInt(process.env.DB_PORT || '5432', 10),
-  username: process.env.DB_USERNAME!,
-  password: process.env.DB_PASSWORD!,
-  database: process.env.DB_NAME!,
-  schema: process.env.DB_SCHEMA || 'public',
+  schema,
   entities: [__dirname + '/../**/*.entity{.ts,.js}'],
   synchronize: process.env.DB_SYNCHRONIZE === 'true',
   logging: process.env.DB_LOGGING === 'true',
   extra: {
-    // Configuración específica para PostgreSQL
     timezone: 'UTC',
-    // Forzar que las fechas se interpreten como UTC
     parseInputDatesAsUTC: true,
   },
 };
+
+const appUrl = getAppDatabaseUrl();
+
+export const typeOrmConfig: TypeOrmModuleOptions = appUrl
+  ? { ...base, url: appUrl }
+  : hasDiscreteDbConfig()
+    ? {
+        ...base,
+        host: process.env.DB_HOST!,
+        port: parseInt(process.env.DB_PORT || '5432', 10),
+        username: process.env.DB_USERNAME!,
+        password: process.env.DB_PASSWORD!,
+        database: process.env.DB_NAME!,
+      }
+    : (() => {
+        throw new Error('Configuración de base de datos incompleta.');
+      })();

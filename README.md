@@ -8,42 +8,50 @@ Incluye migraciones y seeds para facilitar la puesta en marcha por cualquier col
 
 - Node.js >= 18
 - npm >= 9
-- PostgreSQL >= 13
-- Acceso para crear extensiones en la base de datos (`pgcrypto`)
+- Una base PostgreSQL accesible por red (por ejemplo [Neon](https://neon.tech)) **o** PostgreSQL >= 13 en local
+- En la base remota o local debe poder habilitarse la extensión `pgcrypto` (la migración inicial la usa)
 
 ## Configuración del entorno
 
-1. Copia el archivo `.env` (crear si no existe) en la raíz del proyecto y define:
+1. Copia `.env.example` a `.env` en la raíz del proyecto y completa los valores. Referencia completa en `.env.example`.
+
+### Base de datos en la nube (recomendado: Neon)
+
+La aplicación Nest usa una **URL con pooler** para conexiones de runtime. Las **migraciones de TypeORM** y el script de **seeds** usan, si está definida, una URL **sin pooler** (conexión directa), que Neon documenta como *unpooled*; así se evitan problemas habituales con PgBouncer al ejecutar migraciones.
+
+| Variable | Uso |
+|----------|-----|
+| `DATABASE_URL` | API en ejecución (cadena con host pooler; suele incluir `sslmode=require`) |
+| `DATABASE_URL_UNPOOLED` | CLI de TypeORM (`migration:run`, `migration:revert`) y `npm run seed` |
+
+Variables opcionales reconocidas por el código (por si tu proveedor solo inyecta nombres tipo Vercel):
+
+- `POSTGRES_PRISMA_URL` o `POSTGRES_URL` — equivalentes a `DATABASE_URL` si esta no está definida
+- `POSTGRES_URL_NON_POOLING` — equivalente a `DATABASE_URL_UNPOOLED` si esta no está definida
+
+Puedes copiar del panel de Neon también `PGHOST`, `PGUSER`, `PGDATABASE`, `PGPASSWORD`, etc.; no son obligatorias si ya pegaste las URLs completas en `DATABASE_URL` y `DATABASE_URL_UNPOOLED`.
+
+### Base de datos local (alternativa)
+
+Si **no** defines `DATABASE_URL`, debes definir todas estas variables:
+
+- `DB_HOST`, `DB_PORT` (opcional, por defecto 5432), `DB_USERNAME`, `DB_PASSWORD`, `DB_NAME`
+- `DB_SCHEMA` (por defecto `public`)
+
+Opcional: `DB_SYNCHRONIZE=true` solo en desarrollo consciente del riesgo; `DB_LOGGING=true` para ver SQL en consola.
+
+### Resto del `.env`
 
 ```bash
 JWT_SECRET=Tu_llave_secreta
 PORT=Puerto_donde_se_desplegara
-DB_HOST=localhost
-DB_PORT=5432               
-DB_USERNAME=postgres
-DB_PASSWORD=contraseña
-DB_NAME=nombre_de_tu_tabla
-DB_SCHEMA=public
 
-# Configuración de correo electrónico (Nodemailer)
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_SECURE=false
-EMAIL_USER=tu_email@gmail.com
-EMAIL_PASS=tu_contraseña_de_aplicacion
-EMAIL_FROM_NAME=Learning Management System
-EMAIL_FROM_ADDRESS=tu_email@gmail.com
-
-# URL del frontend (para enlaces en correos)
-FRONTEND_URL=http://localhost:3000
-
-# Configuración de Google OAuth
-GOOGLE_CLIENT_ID=tu_google_client_id
-GOOGLE_CLIENT_SECRET=tu_google_client_secret
-GOOGLE_CALLBACK_URL=http://localhost:3001/auth/google/redirect
+# Correo (Nodemailer) — ver .env.example
+# Google OAuth — ver .env.example
+# FRONTEND_URL — ver .env.example
 ```
 
-2. Asegúrate de que la base de datos `DB_NAME` exista en tu servidor PostgreSQL.
+2. Con Neon u otro proveedor, la base ya existe al crear el proyecto; solo hace falta ejecutar migraciones (y opcionalmente seeds). En local, crea previamente la base indicada en `DB_NAME` si usas variables sueltas.
 
 ## Instalación
 
@@ -116,6 +124,7 @@ npm run typeorm -- migration:generate src/migrations/NombreMigracion
 - Seeds: `src/seeds/seed.ts`
 - DataSource CLI: `src/config/typeorm-datasource.ts`
 - Config DB para Nest: `src/config/database.config.ts`
+- Resolución de URLs y validación de entorno: `src/config/database-env.ts`
 - SQL de referencia: `documentation/create` y `documentation/insert`
 
 ## Notas de compatibilidad

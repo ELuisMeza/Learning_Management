@@ -1,29 +1,42 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
-import * as dotenv from 'dotenv';
 import * as path from 'path';
+import {
+  assertDatabaseEnvConfigured,
+  getCliDatabaseUrl,
+  hasDiscreteDbConfig,
+} from './database-env';
 
-dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+assertDatabaseEnvConfigured(true);
 
-const dbHost = process.env.DB_HOST as string;
-const dbPort = parseInt(process.env.DB_PORT || '5432', 10);
-const dbUser = process.env.DB_USERNAME as string;
-const dbPass = process.env.DB_PASSWORD as string;
-const dbName = process.env.DB_NAME as string;
-const dbSchema = process.env.DB_SCHEMA || 'public';
+const schema = process.env.DB_SCHEMA || 'public';
+const cliUrl = getCliDatabaseUrl();
 
-export default new DataSource({
-  type: 'postgres',
-  host: dbHost,
-  port: dbPort,
-  username: dbUser,
-  password: dbPass,
-  database: dbName,
-  schema: dbSchema,
+const common = {
+  type: 'postgres' as const,
+  schema,
   entities: [path.resolve(__dirname, '../**/*.entity.{ts,js}')],
   migrations: [path.resolve(__dirname, '../migrations/*.{ts,js}')],
   synchronize: false,
   logging: process.env.DB_LOGGING === 'true',
-});
+};
 
-
+export default new DataSource(
+  cliUrl
+    ? {
+        ...common,
+        url: cliUrl,
+      }
+    : hasDiscreteDbConfig()
+      ? {
+          ...common,
+          host: process.env.DB_HOST as string,
+          port: parseInt(process.env.DB_PORT || '5432', 10),
+          username: process.env.DB_USERNAME as string,
+          password: process.env.DB_PASSWORD as string,
+          database: process.env.DB_NAME as string,
+        }
+      : (() => {
+          throw new Error('Configuración de base de datos incompleta.');
+        })(),
+);
