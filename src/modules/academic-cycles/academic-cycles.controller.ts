@@ -16,7 +16,7 @@ import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateAcademicCycleDto } from './dto/create-cycles.dto';
 import { UpdateAcademicCycleDto } from './dto/update-cycles';
-import { BasePayloadGetDto } from 'src/globals/dto/base-payload-get.dto';
+import { BasePayloadGetDto } from '../../globals/dto/base-payload-get.dto';
 import { GetCyclesDto } from './dto/get-cycles.dto';
 
 @ApiTags('academic-cycles')

@@ -9,9 +9,9 @@ import {
 } from 'typeorm';
 import { AcademicModule } from '../academic-modules/academic-modules.entity';
 import { Teacher } from '../teachers/teachers.entity';
-import { TeachingModes } from 'src/globals/enums/teaching-modes.enum';
+import { TeachingModes } from '../../globals/enums/teaching-modes.enum';
 import { IsEnum } from 'class-validator';
-import { GlobalStatus } from 'src/globals/enums/global-status.enum';
+import { GlobalStatus } from '../../globals/enums/global-status.enum';
 
 @Entity('classes')
 export class Class {

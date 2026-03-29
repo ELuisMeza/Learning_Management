@@ -16,11 +16,10 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiNoContentResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import type { RequestWithUser } from 'src/globals/types/request-with-user.type';
+import type { RequestWithUser } from '../../globals/types/request-with-user.type';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { EmailsService } from '../emails/emails.service';
 import { CreateUpdateTeacherDto } from '../teachers/dto/create-teacher.dto';
-import { BasePayloadGetDto } from 'src/globals/dto/base-payload-get.dto';
 import { GetUsersDto } from './dto/get-users';
 
 @ApiTags('users')

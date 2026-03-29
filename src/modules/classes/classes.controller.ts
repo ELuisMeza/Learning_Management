@@ -17,9 +17,8 @@ import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateClassDto } from './dto/create-class.dto';
 import { UpdateClassDto } from './dto/update-class.dto';
-import type { RequestWithUser } from 'src/globals/types/request-with-user.type';
+import type { RequestWithUser } from '../../globals/types/request-with-user.type';
 import { ClassStudentsService } from '../class-students/class-students.service';
-import { BasePayloadGetDto } from 'src/globals/dto/base-payload-get.dto';
 import { GetClassesByTeacherIdDto, GetClassesDto } from './dto/get-clasees.dto';
 
 @ApiTags('classes')

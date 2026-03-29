@@ -1,7 +1,6 @@
 import { IsEnum, IsInt, IsNotEmpty, IsString, IsUUID, IsJSON, IsObject, IsOptional } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
-import { GlobalStatus } from "src/globals/enums/global-status.enum";
-import { TeachingModes } from "src/globals/enums/teaching-modes.enum";
+import { TeachingModes } from "../../../globals/enums/teaching-modes.enum";
 
 export class UpdateClassDto {
   @ApiProperty({ example: 'Clase de Ingeniería', description: 'Nombre de la clase' })

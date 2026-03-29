@@ -1,4 +1,4 @@
-import { GlobalStatus } from "src/globals/enums/global-status.enum";
+import { GlobalStatus } from "../../../globals/enums/global-status.enum";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsString, IsNotEmpty, MaxLength, IsInt, Min, IsEnum, IsOptional } from "class-validator";
 

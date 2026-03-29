@@ -10,8 +10,7 @@ import {
   MaxLength,
 } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
-import { TeachingModes } from "src/globals/enums/teaching-modes.enum";
-import { GenderType } from "src/globals/enums/gender-type.enum";
+import { GenderType } from "../../../globals/enums/gender-type.enum";
 
 export class UpdateUserDto {
   @ApiProperty({

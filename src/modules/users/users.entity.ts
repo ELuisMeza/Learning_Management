@@ -10,8 +10,8 @@ import {
 } from 'typeorm';
 import { Role } from '../roles/roles.entity';
 import { Teacher } from '../teachers/teachers.entity';
-import { GlobalStatus } from 'src/globals/enums/global-status.enum';
-import { GenderType } from 'src/globals/enums/gender-type.enum';
+import { GlobalStatus } from '../../globals/enums/global-status.enum';
+import { GenderType } from '../../globals/enums/gender-type.enum';
 import { Exclude } from 'class-transformer';
 
 @Entity('users')

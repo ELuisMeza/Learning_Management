@@ -19,7 +19,7 @@ import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiNoContentResponse, ApiOk
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateRelationDto } from './dto/create-relation.dto';
-import type { RequestWithUser } from 'src/globals/types/request-with-user.type';
+import type { RequestWithUser } from '../../globals/types/request-with-user.type';
 import type { Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
 

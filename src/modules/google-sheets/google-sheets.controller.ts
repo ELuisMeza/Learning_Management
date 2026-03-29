@@ -12,7 +12,7 @@ import { GoogleSheetsService } from './google-sheets.service';
 import { ApiBearerAuth, ApiOperation, ApiTags, ApiOkResponse, ApiQuery } from '@nestjs/swagger';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import type { RequestWithUser } from 'src/globals/types/request-with-user.type';
+import type { RequestWithUser } from '../../globals/types/request-with-user.type';
 import { ExportEvaluationDto } from './dto/export-evaluation.dto';
 import { BadRequestException } from '@nestjs/common';
 

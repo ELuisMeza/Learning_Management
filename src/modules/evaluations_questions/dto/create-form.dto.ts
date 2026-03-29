@@ -9,7 +9,7 @@ import {
   IsOptional,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { CreateQuestionOptionDto } from 'src/modules/evaluations_question_options/dto/create-dto';
+import { CreateQuestionOptionDto } from '../../evaluations_question_options/dto/create-dto';
 
 export class QuestionDto {
   @ApiProperty({

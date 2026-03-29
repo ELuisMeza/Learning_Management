@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, MaxLength } from "class-validator";
-import { TeachingModes } from "src/globals/enums/teaching-modes.enum";
+import { TeachingModes } from "../../../globals/enums/teaching-modes.enum";
 
 export class UpdateCareerDto {
 

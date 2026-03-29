@@ -4,9 +4,9 @@ import { Repository } from 'typeorm';
 import { AcademicModule } from './academic-modules.entity';
 import { CreateAcademicModuleDto } from './dto/create-module.dto';
 import { UpdateAcademicModuleDto } from './dto/update-module.dto';
-import { GlobalStatus } from 'src/globals/enums/global-status.enum';
+import { GlobalStatus } from '../../globals/enums/global-status.enum';
 import { AcademicCyclesService } from '../academic-cycles/academic-cycles.service';
-import { BasePayloadGetDto } from 'src/globals/dto/base-payload-get.dto';
+import { BasePayloadGetDto } from '../../globals/dto/base-payload-get.dto';
 import { GetModulesDto } from './dto/get-modules.dto';
 
 @Injectable()

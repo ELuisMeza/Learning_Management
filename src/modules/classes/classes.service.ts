@@ -3,13 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Class } from './classes.entity';
 import { CreateClassDto } from './dto/create-class.dto';
-import { GlobalStatus } from 'src/globals/enums/global-status.enum';
-import { TeachingModes } from 'src/globals/enums/teaching-modes.enum';
+import { GlobalStatus } from '../../globals/enums/global-status.enum';
+import { TeachingModes } from '../../globals/enums/teaching-modes.enum';
 import { AcademicModulesService } from '../academic-modules/academic-modules.service';
 import { UpdateClassDto } from './dto/update-class.dto';
 import { UsersService } from '../users/users.service';
 import * as QRCode from 'qrcode';
-import { BasePayloadGetDto } from 'src/globals/dto/base-payload-get.dto';
 import { GetClassesByTeacherIdDto, GetClassesDto } from './dto/get-clasees.dto';
 import { transformGetWithDetails } from './utils/transformGetWIthDetails';
 

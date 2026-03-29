@@ -1,8 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEnum, IsOptional, IsUUID } from "class-validator";
-import { BasePayloadGetDto } from "src/globals/dto/base-payload-get.dto";
-import { GlobalStatus } from "src/globals/enums/global-status.enum";
-import { TeachingModes } from "src/globals/enums/teaching-modes.enum";
+import { BasePayloadGetDto } from "../../../globals/dto/base-payload-get.dto";
+import { GlobalStatus } from "../../../globals/enums/global-status.enum";
+import { TeachingModes } from "../../../globals/enums/teaching-modes.enum";
 
 export class GetTeachersDto extends BasePayloadGetDto {
   @ApiProperty({ enum: GlobalStatus, example: GlobalStatus.ACTIVE, description: 'Estado del profesor' })

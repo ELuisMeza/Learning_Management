@@ -6,7 +6,7 @@ import { CreateRubricDto } from './dto/create.dto';
 import { UsersService } from '../users/users.service';
 import { RubricLevelsService } from '../rubric-levels/rubric-levels.service';
 import { RubricCriteriaService } from '../rubric-criteria/rubric-criteria.service';
-import { BasePayloadGetDto } from 'src/globals/dto/base-payload-get.dto';
+import { BasePayloadGetDto } from '../../globals/dto/base-payload-get.dto';
 import { transformResponse } from './utils/transform-response';
 import { TransformedRubric } from './dto/get-rubrics.dto';
 

@@ -3,9 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Teacher } from './teachers.entity';
 import { CreateUpdateTeacherDto } from './dto/create-teacher.dto';
-import { GlobalStatus } from 'src/globals/enums/global-status.enum';
-import { TeachingModes } from 'src/globals/enums/teaching-modes.enum';
-import { BasePayloadGetDto } from 'src/globals/dto/base-payload-get.dto';
+import { GlobalStatus } from '../../globals/enums/global-status.enum';
+import { TeachingModes } from '../../globals/enums/teaching-modes.enum';
 import { GetTeachersDto } from './dto/get-teachers.dto';
 
 @Injectable()

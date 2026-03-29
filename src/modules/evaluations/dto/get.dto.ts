@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEnum, IsOptional, IsString, IsUUID } from "class-validator";
-import { BasePayloadGetDto } from "src/globals/dto/base-payload-get.dto";
-import { EvaluationModes } from "src/globals/enums/evaluation-modes.enum";
+import { BasePayloadGetDto } from "../../../globals/dto/base-payload-get.dto";
+import { EvaluationModes } from "../../../globals/enums/evaluation-modes.enum";
 
 export class GetEvaluationsDto extends BasePayloadGetDto {
   @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000', description: 'ID de la clase' })

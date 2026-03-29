@@ -19,8 +19,8 @@ import { ApiBearerAuth, ApiBody, ApiConsumes, ApiCreatedResponse, ApiNoContentRe
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateRubricDto } from './dto/create.dto';
-import type { RequestWithUser } from 'src/globals/types/request-with-user.type';
-import { BasePayloadGetDto } from 'src/globals/dto/base-payload-get.dto';
+import type { RequestWithUser } from '../../globals/types/request-with-user.type';
+import { BasePayloadGetDto } from '../../globals/dto/base-payload-get.dto';
 @ApiTags('rubrics')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)

@@ -4,9 +4,9 @@ import { Repository } from 'typeorm';
 import { AcademicCycle } from './academic-cycles.entity';
 import { CreateAcademicCycleDto } from './dto/create-cycles.dto';
 import { CareersService } from '../careers/careers.service';
-import { GlobalStatus } from 'src/globals/enums/global-status.enum';
+import { GlobalStatus } from '../../globals/enums/global-status.enum';
 import { UpdateAcademicCycleDto } from './dto/update-cycles';
-import { BasePayloadGetDto } from 'src/globals/dto/base-payload-get.dto';
+import { BasePayloadGetDto } from '../../globals/dto/base-payload-get.dto';
 import { GetCyclesDto } from './dto/get-cycles.dto';
 
 @Injectable()

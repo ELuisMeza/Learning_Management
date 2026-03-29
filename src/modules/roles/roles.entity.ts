@@ -4,7 +4,7 @@ import {
   Column,
   CreateDateColumn,
 } from 'typeorm';
-import { GlobalStatus } from 'src/globals/enums/global-status.enum';
+import { GlobalStatus } from '../../globals/enums/global-status.enum';
 import { IsEnum } from 'class-validator';
 
 @Entity('roles')

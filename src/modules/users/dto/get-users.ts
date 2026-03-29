@@ -1,6 +1,6 @@
-import { GlobalStatus } from "src/globals/enums/global-status.enum";
+import { GlobalStatus } from "../../../globals/enums/global-status.enum";
 import { IsEnum, IsOptional } from "class-validator";
-import { BasePayloadGetDto } from "src/globals/dto/base-payload-get.dto";
+import { BasePayloadGetDto } from "../../../globals/dto/base-payload-get.dto";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class GetUsersDto extends BasePayloadGetDto {

@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsDate, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
-import { EvaluationModes } from "src/globals/enums/evaluation-modes.enum";
+import { EvaluationModes } from "../../../globals/enums/evaluation-modes.enum";
 
 export class CreateEvaluationDto {
 

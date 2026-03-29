@@ -3,7 +3,7 @@ import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiTags } from '@nestjs
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { EvaluationAnswersService } from './evaluation_answers.service';
 import { SubmitExamDto } from './dto/submit-exam.dto';
-import type { RequestWithUser } from 'src/globals/types/request-with-user.type';
+import type { RequestWithUser } from '../../globals/types/request-with-user.type';
 
 @ApiTags('evaluation-answers')
 @ApiBearerAuth()

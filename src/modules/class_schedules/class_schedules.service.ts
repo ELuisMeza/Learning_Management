@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ClassSchedule } from './class_schedules.entity';
 import { Repository } from 'typeorm';
 import { ClassesService } from '../classes/classes.service';
-import { GlobalStatus } from 'src/globals/enums/global-status.enum';
+import { GlobalStatus } from '../../globals/enums/global-status.enum';
 
 @Injectable()
 export class ClassSchedulesService {

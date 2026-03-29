@@ -15,7 +15,7 @@ import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiNoContentResponse, ApiOk
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateEvaluationDto } from './dto/create-evaluation.dto';
-import type { RequestWithUser } from 'src/globals/types/request-with-user.type';
+import type { RequestWithUser } from '../../globals/types/request-with-user.type';
 import { GetEvaluationsDto } from './dto/get.dto';
 import { SubmitRubricDto } from './dto/submit-rubric.dto';
 import { ApiParam } from '@nestjs/swagger';

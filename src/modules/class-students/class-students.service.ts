@@ -2,7 +2,7 @@ import { ConflictException, Injectable, InternalServerErrorException, NotFoundEx
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ClassStudent } from './class-students.entity';
-import { EnrollmentStatus } from 'src/globals/enums/enrollment-status.enum';
+import { EnrollmentStatus } from '../../globals/enums/enrollment-status.enum';
 import { CreateRelationDto } from './dto/create-relation.dto';
 import { ClassesService } from '../classes/classes.service';
 import { UsersService } from '../users/users.service';

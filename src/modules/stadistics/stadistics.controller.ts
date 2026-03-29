@@ -4,7 +4,7 @@ import { ApiOperation, ApiOkResponse } from '@nestjs/swagger';
 import { ApiTags } from '@nestjs/swagger';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiTags('stadistics')
 @ApiBearerAuth()

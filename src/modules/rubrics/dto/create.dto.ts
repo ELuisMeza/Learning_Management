@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty, IsOptional, IsString, IsArray, ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
-import { CreateRubricCriterionDto } from "src/modules/rubric-criteria/dto/create.dto";
+import { CreateRubricCriterionDto } from "../../rubric-criteria/dto/create.dto";
 
 export class CreateRubricDto {
     @ApiProperty({ example: 'Rubrica 1', description: 'Nombre de la rubrica' })

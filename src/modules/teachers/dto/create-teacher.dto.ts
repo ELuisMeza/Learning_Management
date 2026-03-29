@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsOptional, IsInt, IsEnum, MaxLength, IsNotEmpty } from 'class-validator';
-import { TeachingModes } from 'src/globals/enums/teaching-modes.enum';
-import { CreateUserDto } from 'src/modules/users/dto/create-user.dto';
+import { TeachingModes } from '../../../globals/enums/teaching-modes.enum';
+import { CreateUserDto } from '../../users/dto/create-user.dto';
 
 export class CreateUpdateTeacherDto extends CreateUserDto {
   @IsNotEmpty()

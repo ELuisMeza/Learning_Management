@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { CareersService } from 'src/modules/careers/careers.service';
-import { ClassesService } from 'src/modules/classes/classes.service';
-import { TeachersService } from 'src/modules/teachers/teachers.service';
-import { UsersService } from 'src/modules/users/users.service';
+import { CareersService } from '../careers/careers.service';
+import { ClassesService } from '../classes/classes.service';
+import { TeachersService } from '../teachers/teachers.service';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class StadisticsService {

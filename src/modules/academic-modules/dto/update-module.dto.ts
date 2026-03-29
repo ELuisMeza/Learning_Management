@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, MaxLength, Min } from "class-validator";
-import { GlobalStatus } from "src/globals/enums/global-status.enum";
+import { GlobalStatus } from "../../../globals/enums/global-status.enum";
 
 export class UpdateAcademicModuleDto {
   @ApiProperty({ example: 'Módulo de Ingeniería', description: 'Nombre del módulo académico' })

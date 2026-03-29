@@ -17,7 +17,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateAcademicModuleDto } from './dto/create-module.dto';
 import { AcademicModule } from './academic-modules.entity';
 import { UpdateAcademicModuleDto } from './dto/update-module.dto';
-import { BasePayloadGetDto } from 'src/globals/dto/base-payload-get.dto';
+import { BasePayloadGetDto } from '../../globals/dto/base-payload-get.dto';
 import { GetModulesDto } from './dto/get-modules.dto';
 
 @ApiTags('academic-modules')

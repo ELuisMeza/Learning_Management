@@ -3,10 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Career } from './careers.entity';
 import { CreateCareerDto } from './dto/create-career.dto';
-import { GlobalStatus } from 'src/globals/enums/global-status.enum';
-import { TeachingModes } from 'src/globals/enums/teaching-modes.enum';
+import { GlobalStatus } from '../../globals/enums/global-status.enum';
+import { TeachingModes } from '../../globals/enums/teaching-modes.enum';
 import { UpdateCareerDto } from './dto/update-career.dto';
-import { BasePayloadGetDto } from 'src/globals/dto/base-payload-get.dto';
 import { GetCareerDto } from './dto/get-carrer';
 
 @Injectable()

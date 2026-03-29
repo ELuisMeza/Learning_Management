@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, ValidateNested, Min } from "class-validator";
-import { CreateRubricLevelDto } from "src/modules/rubric-levels/dto/create.dto";
+import { CreateRubricLevelDto } from "../../rubric-levels/dto/create.dto";
 import { Type } from "class-transformer";
 
 

@@ -11,16 +11,13 @@ import { Repository } from 'typeorm';
 import { DateTime } from 'luxon';
 import { User } from './users.entity';
 import { CreateUserDto } from './dto/create-user.dto';
-import { GlobalStatus } from 'src/globals/enums/global-status.enum';
-import { GenderType } from 'src/globals/enums/gender-type.enum';
+import { GlobalStatus } from '../../globals/enums/global-status.enum';
 import { RolesService } from '../roles/roles.service';
 import { TeachersService } from '../teachers/teachers.service';
 import { AuthService } from '../auth/auth.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUpdateTeacherDto } from '../teachers/dto/create-teacher.dto';
-import { TeachingModes } from 'src/globals/enums/teaching-modes.enum';
 import { Teacher } from '../teachers/teachers.entity';
-import { BasePayloadGetDto } from 'src/globals/dto/base-payload-get.dto';
 import { GetUsersDto } from './dto/get-users';
 import { Role } from '../roles/roles.entity';
 

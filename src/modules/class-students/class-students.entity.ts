@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 import { Class } from '../classes/classes.entity';
 import { User } from '../users/users.entity';
-import { EnrollmentStatus } from 'src/globals/enums/enrollment-status.enum';
+import { EnrollmentStatus } from '../../globals/enums/enrollment-status.enum';
 import { IsEnum } from 'class-validator';
 
 @Entity('class_students')

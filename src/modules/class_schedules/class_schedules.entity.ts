@@ -9,9 +9,9 @@ import {
 } from 'typeorm';
 import { Class } from '../classes/classes.entity';
 import { IsEnum } from 'class-validator';
-import { DayOfWeek } from 'src/globals/enums/day-of-week.enum';
-import { GlobalStatus } from 'src/globals/enums/global-status.enum';
-import { TeachingModes } from 'src/globals/enums/teaching-modes.enum';
+import { DayOfWeek } from '../../globals/enums/day-of-week.enum';
+import { GlobalStatus } from '../../globals/enums/global-status.enum';
+import { TeachingModes } from '../../globals/enums/teaching-modes.enum';
 
 @Entity('class_schedules')
 export class ClassSchedule {

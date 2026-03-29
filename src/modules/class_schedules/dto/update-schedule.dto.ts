@@ -1,9 +1,8 @@
-import { DayOfWeek } from "src/globals/enums/day-of-week.enum";
+import { DayOfWeek } from "../../../globals/enums/day-of-week.enum";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsDate, IsDateString, IsEnum, IsNotEmpty, IsOptional, IsString } from "class-validator";
-import { GlobalStatus } from "src/globals/enums/global-status.enum";
-import { TeachingModes } from "src/globals/enums/teaching-modes.enum";
-import { Type } from "class-transformer";
+import { GlobalStatus } from "../../../globals/enums/global-status.enum";
+import { TeachingModes } from "../../../globals/enums/teaching-modes.enum";
 
 export class UpdateScheduleDto {
   @ApiProperty({ enum: DayOfWeek, example: DayOfWeek.MONDAY, description: 'Día de la semana' })

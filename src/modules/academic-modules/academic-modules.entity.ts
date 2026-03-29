@@ -8,7 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { AcademicCycle } from '../academic-cycles/academic-cycles.entity';
-import { GlobalStatus } from 'src/globals/enums/global-status.enum';
+import { GlobalStatus } from '../../globals/enums/global-status.enum';
 import { IsEnum } from 'class-validator';
 
 @Entity('academic_modules')
